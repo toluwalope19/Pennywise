@@ -26,4 +26,5 @@ dependencies {
     implementation(libs.coroutines.core)
     implementation(libs.paging.runtime)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+    implementation(libs.javax.inject)
 }
