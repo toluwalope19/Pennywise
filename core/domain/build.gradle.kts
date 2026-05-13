@@ -16,6 +16,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
 
 }
@@ -24,4 +25,5 @@ dependencies {
     implementation(project(":core:common"))
     implementation(libs.coroutines.core)
     implementation(libs.paging.runtime)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }
