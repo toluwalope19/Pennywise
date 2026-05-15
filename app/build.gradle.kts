@@ -67,4 +67,11 @@ dependencies {
     implementation(project(":core:data"))
     implementation(project(":core:ui"))
     coreLibraryDesugaring(libs.desugar.jdk.libs)
+
+    implementation(project(":feature:onboarding"))
+    implementation(project(":feature:dashboard"))
+    implementation(project(":feature:transactions"))
+    implementation(project(":feature:budgets"))
+    implementation(project(":feature:analytics"))
+    implementation(project(":feature:settings"))
 }

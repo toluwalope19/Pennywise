@@ -7,6 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.onboarding.OnboardingScreen
 
 @Composable
 fun PennywiseNavGraph(
@@ -18,7 +19,13 @@ fun PennywiseNavGraph(
         startDestination = startDestination
     ) {
         composable(Screen.Onboarding.route) {
-            // OnboardingScreen(navController)
+            OnboardingScreen(
+                onNavigateToDashboard = {
+                    navController.navigate(Screen.Dashboard.route) {
+                        popUpTo(Screen.Onboarding.route) { inclusive = true }
+                    }
+                }
+            )
         }
 
         composable(Screen.Dashboard.route) {
