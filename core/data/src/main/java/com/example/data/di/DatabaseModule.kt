@@ -2,6 +2,7 @@ package com.example.data.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.data.datastore.PennywiseDataStore
 import com.example.data.local.dao.BudgetDao
 import com.example.data.local.dao.CategoryDao
 import com.example.data.local.dao.TransactionDao
@@ -41,4 +42,10 @@ object DatabaseModule {
     @Provides
     fun provideBudgetDao(db: AppDatabase): BudgetDao =
         db.budgetDao()
+
+    @Provides
+    @Singleton
+    fun providePennywiseDataStore(
+        @ApplicationContext context: Context
+    ): PennywiseDataStore = PennywiseDataStore(context)
 }
