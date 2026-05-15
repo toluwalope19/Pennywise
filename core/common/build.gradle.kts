@@ -22,4 +22,6 @@ android {
 
 dependencies {
     implementation(libs.coroutines.core)
+    implementation(libs.coroutines.core)
+    implementation(libs.androidx.lifecycle.viewmodel)
 }
