@@ -60,4 +60,11 @@ class TransactionRepositoryImpl @Inject constructor(
 
     override suspend fun getTransactionById(id: Long): Transaction? =
         dao.getTransactionById(id)?.toDomain()
+
+    override fun getTransactionsByMonthList(
+        month: Int,
+        year: Int
+    ): Flow<List<Transaction>> =
+        dao.getTransactionsByMonthList(month, year.toString())
+            .map { entities -> entities.map { it.toDomain() } }
 }

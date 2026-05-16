@@ -37,4 +37,12 @@ interface TransactionDao {
 
     @Query("SELECT * FROM transactions WHERE id = :id")
     suspend fun getTransactionById(id: Long): TransactionEntity?
+
+    @Query("""
+    SELECT * FROM transactions 
+    WHERE strftime('%m', date) = printf('%02d', :month)
+    AND strftime('%Y', date) = :year
+    ORDER BY date DESC, createdAt DESC
+""")
+    fun getTransactionsByMonthList(month: Int, year: String): Flow<List<TransactionEntity>>
 }

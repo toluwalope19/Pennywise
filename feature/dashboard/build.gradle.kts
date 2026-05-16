@@ -30,6 +30,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
     implementation(libs.material)
+    implementation(libs.protolite.well.known.types)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
@@ -47,4 +48,13 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.paging.compose)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    implementation(libs.compose.icons.extended)
+
+
+    implementation(libs.compose.icons.extended)          // ← ArrowForward icon
+
+    // Preview
+    implementation(libs.androidx.compose.ui.tooling.preview)     // ← @Preview annotation
+    debugImplementation(libs.androidx.compose.ui.tooling)
 }

@@ -13,4 +13,6 @@ interface TransactionRepository {
     suspend fun updateTransaction(transaction: Transaction)
     suspend fun deleteTransaction(id: Long)
     suspend fun getTransactionById(id: Long): Transaction?
+    fun getTransactionsByMonthList(month: Int, year: Int): Flow<List<Transaction>>
+
 }
