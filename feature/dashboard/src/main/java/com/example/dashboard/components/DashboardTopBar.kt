@@ -54,7 +54,7 @@ fun DashboardTopBar(
         ),
         title = {
             Column(
-                modifier = Modifier.padding(start = 4.dp)
+                modifier = Modifier
             ) {
                 Text(
                     text = "WELCOME BACK",

@@ -44,8 +44,7 @@ fun BalanceHeroSection(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // Balance label + number + badge

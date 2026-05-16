@@ -7,6 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.dashboard.DashboardScreen
 import com.example.onboarding.OnboardingScreen
 
 @Composable
@@ -29,7 +30,17 @@ fun PennywiseNavGraph(
         }
 
         composable(Screen.Dashboard.route) {
-            // DashboardScreen(navController)
+            DashboardScreen(
+                onNavigateToTransactions = {
+                    navController.navigate(Screen.Transactions.route)
+                },
+                onNavigateToTransaction = { id ->
+                    navController.navigate(Screen.EditTransaction.createRoute(id))
+                },
+                onNavigateToAddTransaction = { type ->
+                    navController.navigate(Screen.AddTransaction.createRoute(type))
+                }
+            )
         }
 
         composable(Screen.Transactions.route) {

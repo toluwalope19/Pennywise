@@ -63,30 +63,30 @@ fun DonutChart(
     animDurationMs: Int = 800,
     centerContent: @Composable () -> Unit = {}
 ) {
-    // Guard — nothing to draw
-    if (segments.isEmpty()) return
+    val isEmpty = segments.isEmpty() ||
+            segments.sumOf { it.value.toDouble() } <= 0.0
 
-    val total = segments.sumOf { it.value.toDouble() }.toFloat()
-    if (total <= 0f) return
-
-    // Calculate percentage for each segment
-    val percentages = segments.map { it.value / total }
-
-    // One animatable per segment
-    val animatedSweeps = percentages.map { pct ->
-        val targetSweep = pct * (360f - gapAngle * segments.size)
-        val animatable = remember(pct) { Animatable(if (animated) 0f else targetSweep) }
-        LaunchedEffect(pct) {
-            animatable.animateTo(
-                targetValue = targetSweep,
-                animationSpec = tween(
-                    durationMillis = animDurationMs,
-                    easing = FastOutSlowInEasing
+    // Animate each segment — only when not empty
+    val animatedSweeps = if (!isEmpty) {
+        val total = segments.sumOf { it.value.toDouble() }.toFloat()
+        val percentages = segments.map { it.value / total }
+        percentages.map { pct ->
+            val targetSweep = pct * (360f - gapAngle * segments.size)
+            val animatable = remember(pct) {
+                Animatable(if (animated) 0f else targetSweep)
+            }
+            LaunchedEffect(pct) {
+                animatable.animateTo(
+                    targetValue = targetSweep,
+                    animationSpec = tween(
+                        durationMillis = animDurationMs,
+                        easing = FastOutSlowInEasing
+                    )
                 )
-            )
+            }
+            animatable.value
         }
-        animatable.value
-    }
+    } else emptyList()
 
     Box(
         modifier = modifier.size(chartSize),
@@ -95,52 +95,65 @@ fun DonutChart(
         Canvas(modifier = Modifier.size(chartSize)) {
             val strokePx = strokeWidth.toPx()
             val diameter = size.minDimension - strokePx
-            val radius = diameter / 2f
             val topLeft = Offset(
                 x = (size.width - diameter) / 2f,
                 y = (size.height - diameter) / 2f
             )
             val arcSize = Size(diameter, diameter)
 
-            // Background guide ring — barely visible
-            drawArc(
-                color = Color.White.copy(alpha = 0.05f),
-                startAngle = 0f,
-                sweepAngle = 360f,
-                useCenter = false,
-                topLeft = topLeft,
-                size = arcSize,
-                style = Stroke(
-                    width = strokePx,
-                    cap = StrokeCap.Butt
-                )
-            )
-
-            // Draw segments starting from top (-90°)
-            var currentAngle = -90f
-
-            segments.forEachIndexed { index, segment ->
-                val sweep = animatedSweeps.getOrElse(index) { 0f }
-                if (sweep > 0.5f) { // skip invisible segments
-                    drawArc(
-                        color = segment.color,
-                        startAngle = currentAngle,
-                        sweepAngle = sweep,
-                        useCenter = false,
-                        topLeft = topLeft,
-                        size = arcSize,
-                        style = Stroke(
-                            width = strokePx,
-                            cap = StrokeCap.Butt
-                        )
+            if (isEmpty) {
+                // Empty state — single grey ring, slightly brighter than guide
+                drawArc(
+                    color = Color.White.copy(alpha = 0.08f),
+                    startAngle = 0f,
+                    sweepAngle = 360f,
+                    useCenter = false,
+                    topLeft = topLeft,
+                    size = arcSize,
+                    style = Stroke(
+                        width = strokePx,
+                        cap = StrokeCap.Butt
                     )
-                    // Advance angle — segment sweep + gap
-                    currentAngle += sweep + gapAngle
+                )
+            } else {
+                // Background guide ring
+                drawArc(
+                    color = Color.White.copy(alpha = 0.05f),
+                    startAngle = 0f,
+                    sweepAngle = 360f,
+                    useCenter = false,
+                    topLeft = topLeft,
+                    size = arcSize,
+                    style = Stroke(
+                        width = strokePx,
+                        cap = StrokeCap.Butt
+                    )
+                )
+
+                // Draw segments
+                var currentAngle = -90f
+                segments.forEachIndexed { index, segment ->
+                    val sweep = animatedSweeps.getOrElse(index) { 0f }
+                    if (sweep > 0.5f) {
+                        drawArc(
+                            color = segment.color,
+                            startAngle = currentAngle,
+                            sweepAngle = sweep,
+                            useCenter = false,
+                            topLeft = topLeft,
+                            size = arcSize,
+                            style = Stroke(
+                                width = strokePx,
+                                cap = StrokeCap.Butt
+                            )
+                        )
+                        currentAngle += sweep + gapAngle
+                    }
                 }
             }
         }
 
-        // Center slot — caller decides what goes here
+        // Center content — always shown, caller handles empty state text
         centerContent()
     }
 }

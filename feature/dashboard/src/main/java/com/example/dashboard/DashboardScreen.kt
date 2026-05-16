@@ -18,6 +18,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.dashboard.components.BalanceHeroSection
 import com.example.dashboard.components.DashboardTopBar
+import com.example.dashboard.components.DonutCard
+import com.example.dashboard.components.RecentTransactionsSection
 import com.example.ui.theme.Accent
 import com.example.ui.theme.Background
 
@@ -96,7 +98,7 @@ private fun DashboardContent(
                 horizontal = 16.dp,
                 vertical = 12.dp
             ),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Components slot in here one by one
             item {
@@ -106,8 +108,23 @@ private fun DashboardContent(
                     totalExpense = state.totalExpense
                 )
             }
-            // item { RecentTransactionsHeader(...) }
-            // items(state.recentTransactions) { TransactionRow(...) }
+            item {
+                DonutCard(
+                    totalExpense = state.totalExpense,
+                    categorySpending = state.spendingByCategory,
+                )
+            }
+            item {
+                RecentTransactionsSection(
+                    transactions = state.recentTransactions,
+                    onSeeAllClick = {
+                        onEvent(DashboardUiEvent.OnSeeAllTransactionsClick)
+                    },
+                    onTransactionClick = { id ->
+                        onEvent(DashboardUiEvent.OnTransactionClick(id))
+                    }
+                )
+            }
         }
     }
 }
@@ -120,5 +137,5 @@ fun DashboardBottomNav(
     onBudgetsClick: () -> Unit,
     onAnalyticsClick: () -> Unit
 ) {
-    TODO("Not yet implemented")
+
 }

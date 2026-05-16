@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
+import androidx.compose.material.icons.rounded.PieChart
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -43,7 +44,7 @@ import com.example.ui.theme.TextSecondary
 
 
 @Composable
-private fun DonutCard(
+fun DonutCard(
     totalExpense: Double,
     categorySpending: List<CategorySpending>,
     currencySymbol: String = "₦"
@@ -104,9 +105,9 @@ private fun DonutCard(
                 }
             )
 
-            CategoryLegendGrid(
-                categorySpending = categorySpending
-            )
+            if (categorySpending.isNotEmpty()) {
+                CategoryLegendGrid(categorySpending = categorySpending)
+            }
         }
     }
 }
@@ -116,69 +117,102 @@ private fun DonutCenterContent(
     totalExpense: Double,
     currencySymbol: String
 ) {
-    val formatted = CurrencyFormatter.format(totalExpense)
-    val parts = formatted.split(".")
-    val whole = parts[0]
-    val cents = parts.getOrElse(1) { "00" }
+    val isEmpty = totalExpense <= 0.0
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Text(
-            text = "TOTAL EXPENSES",
-            fontFamily = InterFontFamily,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 11.sp,
-            letterSpacing = 1.2.sp,
-            color = TextSecondary
-        )
-
-        Row(
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.Center
+    if (isEmpty) {
+        // Empty state center
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Text(
-                text = "$currencySymbol$whole",
-                fontFamily = InterFontFamily,
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 32.sp,
-                letterSpacing = (-1.2).sp,
-                color = TextPrimary,
-                lineHeight = 32.sp
+            Icon(
+                imageVector = Icons.Rounded.PieChart,
+                contentDescription = null,
+                tint = TextSecondary.copy(alpha = 0.4f),
+                modifier = Modifier.size(28.dp)
             )
             Text(
-                text = ".$cents",
+                text = "No expenses",
                 fontFamily = InterFontFamily,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                color = TextSecondary,
-                modifier = Modifier.padding(bottom = 3.dp)
+                fontWeight = FontWeight.Medium,
+                fontSize = 13.sp,
+                color = TextSecondary.copy(alpha = 0.6f)
+            )
+            Text(
+                text = "this month",
+                fontFamily = InterFontFamily,
+                fontWeight = FontWeight.Normal,
+                fontSize = 11.sp,
+                color = TextSecondary.copy(alpha = 0.4f)
             )
         }
+    } else {
+        // Normal state — existing content
+        val formatted = CurrencyFormatter.format(totalExpense)
+        val parts = formatted.split(".")
+        val whole = parts[0]
+        val cents = parts.getOrElse(1) { "00" }
 
-        Surface(
-            shape = RoundedCornerShape(50.dp),
-            color = Income.copy(alpha = 0.12f)
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
+            Text(
+                text = "TOTAL EXPENSES",
+                fontFamily = InterFontFamily,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 11.sp,
+                letterSpacing = 1.2.sp,
+                color = TextSecondary
+            )
             Row(
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.Center
             ) {
-                Icon(
-                    imageVector = Icons.Rounded.ArrowDownward,
-                    contentDescription = null,
-                    tint = Income,
-                    modifier = Modifier.size(11.dp)
+                Text(
+                    text = "$currencySymbol$whole",
+                    fontFamily = InterFontFamily,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 32.sp,
+                    letterSpacing = (-1.2).sp,
+                    color = TextPrimary,
+                    lineHeight = 32.sp
                 )
                 Text(
-                    text = "12% vs last month",
+                    text = ".$cents",
                     fontFamily = InterFontFamily,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 11.sp,
-                    color = Income
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = TextSecondary,
+                    modifier = Modifier.padding(bottom = 3.dp)
                 )
+            }
+            Surface(
+                shape = RoundedCornerShape(50.dp),
+                color = Income.copy(alpha = 0.12f)
+            ) {
+                Row(
+                    modifier = Modifier.padding(
+                        horizontal = 8.dp,
+                        vertical = 3.dp
+                    ),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowDownward,
+                        contentDescription = null,
+                        tint = Income,
+                        modifier = Modifier.size(11.dp)
+                    )
+                    Text(
+                        text = "12% vs last month",
+                        fontFamily = InterFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 11.sp,
+                        color = Income
+                    )
+                }
             }
         }
     }
@@ -202,6 +236,22 @@ private fun DonutCardPreview() {
                     CategorySpending("EDUCATION", 60.47, 9f),
                     CategorySpending("OTHER", 47.20, 7f)
                 )
+            )
+        }
+    }
+}
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF0A0A0A
+)
+@Composable
+private fun DonutCardEmptyPreview() {
+    PennywiseTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            DonutCard(
+                totalExpense = 0.0,
+                categorySpending = emptyList()
             )
         }
     }
