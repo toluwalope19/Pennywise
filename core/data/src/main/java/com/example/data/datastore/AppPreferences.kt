@@ -5,5 +5,6 @@ data class AppPreferences(
     val currencyCode: String = "NGN",
     val isDarkTheme: Boolean = true,
     val spendingAlertsEnabled: Boolean = true,
-    val weeklySummaryEnabled: Boolean = false
+    val weeklySummaryEnabled: Boolean = false,
+    val hasSeenOnboarding: Boolean = false,
 )

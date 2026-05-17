@@ -1,4 +1,6 @@
-package com.example.dashboard.components
+package com.example.ui.components
+
+
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -7,18 +9,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.PieChart
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.PieChart
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Analytics
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.PieChart
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,26 +32,35 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ui.theme.Accent
 import com.example.ui.theme.PennywiseTheme
 import com.example.ui.theme.Surface
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
-import com.google.api.Monitoring
+
+
+// Routes — used to determine active tab
+object PennywiseRoutes {
+    const val DASHBOARD = "dashboard"
+    const val TRANSACTIONS = "transactions"
+    const val BUDGETS = "budgets"
+    const val ANALYTICS = "analytics"
+}
 
 @Composable
-private fun DashboardBottomNav(
+fun PennywiseBottomNav(
+    activeRoute: String,
     onHomeClick: () -> Unit,
     onActivityClick: () -> Unit,
     onAddClick: () -> Unit,
     onBudgetsClick: () -> Unit,
     onAnalyticsClick: () -> Unit,
-    activeRoute: String = "dashboard" // track which tab is active
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(Surface)
+            .navigationBarsPadding()
     ) {
         Row(
             modifier = Modifier
@@ -57,23 +70,25 @@ private fun DashboardBottomNav(
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Home — active
-            NavItem(
-                icon = Icons.Rounded.Home,
+            // Home
+            BottomNavItem(
+                activeIcon = Icons.Filled.Home,
+                inactiveIcon = Icons.Outlined.Home,
                 label = "Home",
-                isActive = true,
+                isActive = activeRoute == PennywiseRoutes.DASHBOARD,
                 onClick = onHomeClick
             )
 
             // Activity
-            NavItem(
-                icon = Icons.Rounded.Schedule,
+            BottomNavItem(
+                activeIcon = Icons.Rounded.Schedule,
+                inactiveIcon = Icons.Rounded.Schedule,
                 label = "Activity",
-                isActive = false,
+                isActive = activeRoute == PennywiseRoutes.TRANSACTIONS,
                 onClick = onActivityClick
             )
 
-            // Centre FAB
+            // Centre FAB — gradient, no active state
             Box(
                 modifier = Modifier
                     .size(52.dp)
@@ -98,18 +113,20 @@ private fun DashboardBottomNav(
             }
 
             // Budgets
-            NavItem(
-                icon = Icons.Rounded.PieChart,
+            BottomNavItem(
+                activeIcon = Icons.Filled.PieChart,
+                inactiveIcon = Icons.Outlined.PieChart,
                 label = "Budgets",
-                isActive = false,
+                isActive = activeRoute == PennywiseRoutes.BUDGETS,
                 onClick = onBudgetsClick
             )
 
             // Analytics
-            NavItem(
-                icon = Icons.Rounded.Analytics,
+            BottomNavItem(
+                activeIcon = Icons.Rounded.Analytics,
+                inactiveIcon = Icons.Rounded.Analytics,
                 label = "Analytics",
-                isActive = false,
+                isActive = activeRoute == PennywiseRoutes.ANALYTICS,
                 onClick = onAnalyticsClick
             )
         }
@@ -117,9 +134,9 @@ private fun DashboardBottomNav(
 }
 
 @Composable
-private fun NavItem(
-    icon: ImageVector,
-    iconFilled: ImageVector = icon, // filled variant for active state
+private fun BottomNavItem(
+    activeIcon: ImageVector,
+    inactiveIcon: ImageVector,
     label: String,
     isActive: Boolean,
     onClick: () -> Unit
@@ -129,9 +146,9 @@ private fun NavItem(
         modifier = Modifier.size(48.dp)
     ) {
         Icon(
-            imageVector = if (isActive) iconFilled else icon,
+            imageVector = if (isActive) activeIcon else inactiveIcon,
             contentDescription = label,
-            tint = if (isActive) TextPrimary else TextSecondary, // ← white when active
+            tint = if (isActive) TextPrimary else TextSecondary,
             modifier = Modifier.size(24.dp)
         )
     }
@@ -142,9 +159,10 @@ private fun NavItem(
     backgroundColor = 0xFF141414
 )
 @Composable
-private fun DashboardBottomNavPreview() {
+private fun PennywiseBottomNavPreview() {
     PennywiseTheme {
-        DashboardBottomNav(
+        PennywiseBottomNav(
+            activeRoute = PennywiseRoutes.DASHBOARD,
             onHomeClick = {},
             onActivityClick = {},
             onAddClick = {},

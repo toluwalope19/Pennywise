@@ -21,6 +21,7 @@ class PennywiseDataStore @Inject constructor(
     val preferences: Flow<AppPreferences> = context.dataStore.data
         .map { prefs ->
             AppPreferences(
+                hasSeenOnboarding = prefs[PreferencesKeys.HAS_SEEN_ONBOARDING] ?: false,
                 currencySymbol = prefs[PreferencesKeys.CURRENCY_SYMBOL] ?: "₦",
                 currencyCode = prefs[PreferencesKeys.CURRENCY_CODE] ?: "NGN",
                 isDarkTheme = prefs[PreferencesKeys.IS_DARK_THEME] ?: true,
@@ -51,6 +52,12 @@ class PennywiseDataStore @Inject constructor(
     suspend fun setWeeklySummary(enabled: Boolean) {
         context.dataStore.edit { prefs ->
             prefs[PreferencesKeys.WEEKLY_SUMMARY_ENABLED] = enabled
+        }
+    }
+
+    suspend fun setHasSeenOnboarding(seen: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[PreferencesKeys.HAS_SEEN_ONBOARDING] = seen
         }
     }
 }

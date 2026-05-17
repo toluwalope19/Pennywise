@@ -20,6 +20,8 @@ import com.example.dashboard.components.BalanceHeroSection
 import com.example.dashboard.components.DashboardTopBar
 import com.example.dashboard.components.DonutCard
 import com.example.dashboard.components.RecentTransactionsSection
+import com.example.ui.components.PennywiseBottomNav
+import com.example.ui.components.PennywiseRoutes
 import com.example.ui.theme.Accent
 import com.example.ui.theme.Background
 
@@ -68,7 +70,8 @@ private fun DashboardContent(
             )
         },
         bottomBar = {
-            DashboardBottomNav(
+            PennywiseBottomNav(
+                activeRoute = PennywiseRoutes.DASHBOARD,
                 onHomeClick = { },
                 onActivityClick = { onEvent(DashboardUiEvent.OnSeeAllTransactionsClick) },
                 onAddClick = { onEvent(DashboardUiEvent.OnAddTransactionClick) },
@@ -78,7 +81,7 @@ private fun DashboardContent(
         }
     )  { paddingValues ->
 
-        if (state.isLoading) {
+        if (state.isLoading && state.recentTransactions.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -86,8 +89,8 @@ private fun DashboardContent(
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator(color = Accent)
-                return@Scaffold
             }
+            return@Scaffold
         }
 
         LazyColumn(
@@ -129,13 +132,3 @@ private fun DashboardContent(
     }
 }
 
-@Composable
-fun DashboardBottomNav(
-    onHomeClick: () -> Unit,
-    onActivityClick: () -> Unit,
-    onAddClick: () -> Unit,
-    onBudgetsClick: () -> Unit,
-    onAnalyticsClick: () -> Unit
-) {
-
-}

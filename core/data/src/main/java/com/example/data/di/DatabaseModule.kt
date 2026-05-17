@@ -14,6 +14,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
 import javax.inject.Singleton
 
 @Module
@@ -23,7 +24,7 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideAppDatabase(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
     ): AppDatabase {
         return Room.databaseBuilder(
             context,
@@ -34,19 +35,15 @@ object DatabaseModule {
             .addCallback(object : RoomDatabase.Callback() {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
-                    // Seed default categories on first launch
-                    db.execSQL("""
-                INSERT INTO categories (name, icon, color, isDefault) VALUES
-                ('Food', 'restaurant', '#FF8A3D', 1),
-                ('Shopping', 'shopping_bag', '#FF7AC1', 1),
-                ('Health', 'fitness_center', '#5AE9C8', 1),
-                ('Transport', 'directions_car', '#4FD1FF', 1),
-                ('Education', 'menu_book', '#B79CFF', 1),
-                ('Utilities', 'bolt', '#FFD25A', 1),
-                ('Travel', 'flight', '#5AE9C8', 1),
-                ('Income', 'payments', '#00E5A0', 1),
-                ('Other', 'more_horiz', '#8C8C8C', 1)
-            """.trimIndent())
+                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Food', 'restaurant', '#FF8A3D', 1)")
+                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Shopping', 'shopping_bag', '#FF7AC1', 1)")
+                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Health', 'fitness_center', '#5AE9C8', 1)")
+                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Transport', 'directions_car', '#4FD1FF', 1)")
+                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Education', 'menu_book', '#B79CFF', 1)")
+                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Utilities', 'bolt', '#FFD25A', 1)")
+                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Travel', 'flight', '#5AE9C8', 1)")
+                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Income', 'payments', '#00E5A0', 1)")
+                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Other', 'more_horiz', '#8C8C8C', 1)")
                 }
             })
             .build()

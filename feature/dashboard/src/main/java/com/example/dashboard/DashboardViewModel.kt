@@ -44,7 +44,6 @@ class DashboardViewModel @Inject constructor(
 
     private fun loadDashboard() {
         viewModelScope.launch {
-            setState { copy(isLoading = true, error = null) }
 
             combine(
                 getMonthlyTransactions(
