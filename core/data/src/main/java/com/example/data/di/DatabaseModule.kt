@@ -24,30 +24,16 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideAppDatabase(
-        @ApplicationContext context: Context,
-    ): AppDatabase {
-        return Room.databaseBuilder(
+        @ApplicationContext context: Context
+    ): AppDatabase =
+        Room.databaseBuilder(
             context,
             AppDatabase::class.java,
             "pennywise.db"
         )
             .fallbackToDestructiveMigration()
-            .addCallback(object : RoomDatabase.Callback() {
-                override fun onCreate(db: SupportSQLiteDatabase) {
-                    super.onCreate(db)
-                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Food', 'restaurant', '#FF8A3D', 1)")
-                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Shopping', 'shopping_bag', '#FF7AC1', 1)")
-                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Health', 'fitness_center', '#5AE9C8', 1)")
-                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Transport', 'directions_car', '#4FD1FF', 1)")
-                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Education', 'menu_book', '#B79CFF', 1)")
-                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Utilities', 'bolt', '#FFD25A', 1)")
-                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Travel', 'flight', '#5AE9C8', 1)")
-                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Income', 'payments', '#00E5A0', 1)")
-                    db.execSQL("INSERT INTO categories (name, icon, color, isDefault) VALUES ('Other', 'more_horiz', '#8C8C8C', 1)")
-                }
-            })
             .build()
-    }
+
 
     @Provides
     fun provideTransactionDao(db: AppDatabase): TransactionDao =

@@ -67,4 +67,11 @@ class TransactionRepositoryImpl @Inject constructor(
     ): Flow<List<Transaction>> =
         dao.getTransactionsByMonthList(month, year.toString())
             .map { entities -> entities.map { it.toDomain() } }
+
+    override suspend fun getAllTimeIncome(): Double =
+        dao.getTotalIncome() ?: 0.0
+
+    override suspend fun getAllTimeExpense(): Double =
+        dao.getTotalExpense() ?: 0.0
+
 }

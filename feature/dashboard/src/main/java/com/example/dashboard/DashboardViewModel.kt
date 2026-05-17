@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.common.mvi.MviViewModel
 import com.example.domain.model.TransactionType
 import com.example.domain.usecase.category.GetCategoriesUseCase
+import com.example.domain.usecase.transaction.GetAllTimeBalanceUseCase
 import com.example.domain.usecase.transaction.GetMonthlyTransactionsUseCase
 import com.example.domain.usecase.transaction.GetRecentTransactionsUseCase
 import com.example.domain.usecase.transaction.GetTransactionsUseCase
@@ -18,7 +19,8 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor(
     private val getRecentTransactions: GetRecentTransactionsUseCase,
     private val getMonthlyTransactions: GetMonthlyTransactionsUseCase,
-    private val getCategories: GetCategoriesUseCase
+    private val getCategories: GetCategoriesUseCase,
+    private val getAllTimeBalance: GetAllTimeBalanceUseCase
 ) : MviViewModel<DashboardUiState, DashboardUiEvent, DashboardUiEffect>(
     initialState = DashboardUiState()
 ) {
@@ -44,6 +46,9 @@ class DashboardViewModel @Inject constructor(
 
     private fun loadDashboard() {
         viewModelScope.launch {
+
+            val allTimeBalance = getAllTimeBalance()
+            setState { copy(totalBalance = allTimeBalance) }
 
             combine(
                 getMonthlyTransactions(
@@ -97,7 +102,6 @@ class DashboardViewModel @Inject constructor(
                             isLoading = false,
                             totalIncome = data.totalIncome,
                             totalExpense = data.totalExpense,
-                            totalBalance = data.totalIncome - data.totalExpense,
                             spendingByCategory = data.categorySpending,
                             recentTransactions = data.recentTransactions
                         )

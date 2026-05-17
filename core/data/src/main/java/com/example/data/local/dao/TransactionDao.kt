@@ -45,4 +45,10 @@ interface TransactionDao {
     ORDER BY date DESC, createdAt DESC
 """)
     fun getTransactionsByMonthList(month: Int, year: String): Flow<List<TransactionEntity>>
+
+    @Query("SELECT SUM(amount) FROM transactions WHERE type = 'INCOME'")
+    suspend fun getTotalIncome(): Double?
+
+    @Query("SELECT SUM(amount) FROM transactions WHERE type = 'EXPENSE'")
+    suspend fun getTotalExpense(): Double?
 }
