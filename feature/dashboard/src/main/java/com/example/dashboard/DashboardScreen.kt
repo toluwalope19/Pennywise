@@ -3,6 +3,7 @@ package com.example.dashboard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -59,6 +60,7 @@ private fun DashboardContent(
 ) {
     Scaffold(
         containerColor = Background,
+        contentWindowInsets = WindowInsets(0),
         topBar = {
             DashboardTopBar(
                 userName = "Alex Park", // comes from DataStore later

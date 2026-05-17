@@ -46,5 +46,10 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.paging.compose)
+    implementation(libs.paging.runtime)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    debugImplementation(libs.androidx.compose.ui.tooling)
     implementation(libs.mlkit.text.recognition)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+    implementation(libs.compose.icons.extended)
 }

@@ -15,6 +15,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.dashboard.DashboardScreen
 import com.example.onboarding.OnboardingScreen
+import com.example.transactions.TransactionsScreen
 import com.example.ui.components.PennywiseBottomNav
 import com.example.ui.theme.Background
 
@@ -107,7 +108,15 @@ fun PennywiseNavGraph(
             }
 
             composable(Screen.Transactions.route) {
-                // TransactionsScreen — coming soon
+                TransactionsScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToTransaction = { id ->
+                        navController.navigate(Screen.EditTransaction.createRoute(id))
+                    },
+                    onNavigateToAddTransaction = {
+                        navController.navigate(Screen.AddTransaction.createRoute())
+                    }
+                )
             }
 
             composable(

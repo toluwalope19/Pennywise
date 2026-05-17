@@ -36,6 +36,7 @@ import com.example.domain.model.TransactionType
 import com.example.ui.components.CategoryIcon
 import com.example.ui.components.CategoryIconShape
 import com.example.ui.components.CategoryType
+import com.example.ui.components.TransactionRow
 import com.example.ui.theme.Expense
 import com.example.ui.theme.Income
 import com.example.ui.theme.InterFontFamily
@@ -124,6 +125,17 @@ private fun RecentTransactionsCard(
             transactions.forEachIndexed { index, transaction ->
                 TransactionRow(
                     transaction = transaction,
+                    categoryType = when (transaction.categoryId) {
+                        1L -> CategoryType.FOOD
+                        2L -> CategoryType.SHOPPING
+                        3L -> CategoryType.HEALTH
+                        4L -> CategoryType.TRANSPORT
+                        5L -> CategoryType.EDUCATION
+                        6L -> CategoryType.UTILITIES
+                        7L -> CategoryType.TRAVEL
+                        8L -> CategoryType.INCOME
+                        else -> CategoryType.OTHER
+                    },
                     onClick = { onTransactionClick(transaction.id) }
                 )
                 // Divider between rows — not after last
@@ -141,97 +153,6 @@ private fun RecentTransactionsCard(
     }
 }
 
-// ── Transaction row ────────────────────────────────────────────────────────
-
-@Composable
-private fun TransactionRow(
-    transaction: Transaction,
-    onClick: () -> Unit
-) {
-    // Replace with this
-    val categoryType = when (transaction.categoryId) {
-        1L -> CategoryType.FOOD
-        2L -> CategoryType.SHOPPING
-        3L -> CategoryType.HEALTH
-        4L -> CategoryType.TRANSPORT
-        5L -> CategoryType.EDUCATION
-        6L -> CategoryType.UTILITIES
-        7L -> CategoryType.TRAVEL
-        8L -> CategoryType.INCOME
-        else -> CategoryType.OTHER
-    }
-
-    val dateLabel = when {
-        transaction.date == LocalDate.now() -> "Today"
-        transaction.date == LocalDate.now().minusDays(1) -> "Yesterday"
-        else -> transaction.date.dayOfWeek.name
-            .lowercase()
-            .replaceFirstChar { it.uppercase() }
-            .take(3) // "Mon", "Tue" etc
-    }
-
-    val amountText = if (transaction.type == TransactionType.INCOME) {
-        "+${CurrencyFormatter.formatWithSymbol(transaction.amount)}"
-    } else {
-        "-${CurrencyFormatter.formatWithSymbol(transaction.amount)}"
-    }
-
-    val amountColor = if (transaction.type == TransactionType.INCOME) {
-        Income
-    } else {
-        TextPrimary
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        // Category icon — circle
-        CategoryIcon(
-            categoryType = categoryType,
-            size = 44.dp,
-            shape = CategoryIconShape.CIRCLE
-        )
-
-        // Name + subtitle
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(3.dp)
-        ) {
-            Text(
-                text = transaction.note ?: categoryType.displayName,
-                fontFamily = InterFontFamily,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 15.sp,
-                color = TextPrimary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = "$dateLabel · ${categoryType.displayName}",
-                fontFamily = InterFontFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 13.sp,
-                color = TextSecondary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-
-        // Amount
-        Text(
-            text = amountText,
-            fontFamily = InterFontFamily,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 15.sp,
-            color = amountColor
-        )
-    }
-}
 
 // ── Empty state ────────────────────────────────────────────────────────────
 

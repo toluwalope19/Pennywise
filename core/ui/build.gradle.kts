@@ -37,6 +37,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
 
     implementation(project(":core:common"))
+    implementation(project(":core:domain"))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.compose.icons.extended)
