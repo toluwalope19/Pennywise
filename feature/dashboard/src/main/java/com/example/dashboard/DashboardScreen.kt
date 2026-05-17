@@ -68,16 +68,6 @@ private fun DashboardContent(
                     onEvent(DashboardUiEvent.OnMonthChanged(direction))
                 }
             )
-        },
-        bottomBar = {
-            PennywiseBottomNav(
-                activeRoute = PennywiseRoutes.DASHBOARD,
-                onHomeClick = { },
-                onActivityClick = { onEvent(DashboardUiEvent.OnSeeAllTransactionsClick) },
-                onAddClick = { onEvent(DashboardUiEvent.OnAddTransactionClick) },
-                onBudgetsClick = { },
-                onAnalyticsClick = { }
-            )
         }
     )  { paddingValues ->
 

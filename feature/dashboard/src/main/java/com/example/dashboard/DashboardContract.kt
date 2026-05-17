@@ -5,7 +5,7 @@ import java.time.LocalDate
 
 
 data class DashboardUiState(
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
     val userName: String = "Alex Park",
     val selectedMonth: Int = LocalDate.now().monthValue,
     val selectedYear: Int = LocalDate.now().year,

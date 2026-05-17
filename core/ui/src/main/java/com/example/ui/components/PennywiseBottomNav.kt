@@ -44,6 +44,7 @@ object PennywiseRoutes {
     const val TRANSACTIONS = "transactions"
     const val BUDGETS = "budgets"
     const val ANALYTICS = "analytics"
+    const val SETTINGS = "settings"
 }
 
 @Composable
