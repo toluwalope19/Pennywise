@@ -15,7 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.transactions.TransactionListItem
+import com.example.transactions.list.TransactionListItem
 import com.example.ui.components.CategoryType
 import com.example.ui.components.TransactionRow
 import com.example.ui.theme.InterFontFamily

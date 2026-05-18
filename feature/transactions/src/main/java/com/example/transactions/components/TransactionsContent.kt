@@ -15,9 +15,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
-import com.example.transactions.TransactionListItem
-import com.example.transactions.TransactionsUiEvent
-import com.example.transactions.TransactionsUiState
+import com.example.transactions.list.TransactionListItem
+import com.example.transactions.list.TransactionsUiEvent
+import com.example.transactions.list.TransactionsUiState
 import com.example.ui.theme.Accent
 import com.example.ui.theme.Background
 

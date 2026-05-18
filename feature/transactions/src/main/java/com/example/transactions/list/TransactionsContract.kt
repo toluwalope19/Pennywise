@@ -1,4 +1,4 @@
-package com.example.transactions
+package com.example.transactions.list
 
 
 import com.example.domain.model.Transaction

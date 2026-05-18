@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
-import com.example.transactions.TransactionListItem
+import com.example.transactions.list.TransactionListItem
 import com.example.ui.theme.Accent
 
 @Composable

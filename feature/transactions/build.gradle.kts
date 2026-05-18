@@ -52,4 +52,5 @@ dependencies {
     implementation(libs.mlkit.text.recognition)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.compose.icons.extended)
+    implementation(libs.mlkit.text.recognition)
 }

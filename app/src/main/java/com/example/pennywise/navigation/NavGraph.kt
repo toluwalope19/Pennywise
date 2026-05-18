@@ -15,7 +15,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import com.example.dashboard.DashboardScreen
 import com.example.onboarding.OnboardingScreen
-import com.example.transactions.TransactionsScreen
+import com.example.transactions.add.AddTransactionScreen
+import com.example.transactions.list.TransactionsScreen
 import com.example.ui.components.PennywiseBottomNav
 import com.example.ui.theme.Background
 
@@ -129,7 +130,10 @@ fun PennywiseNavGraph(
                 )
             ) { backStackEntry ->
                 val type = backStackEntry.arguments?.getString("type") ?: "EXPENSE"
-                // AddTransactionScreen — coming soon
+                AddTransactionScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onTransactionSaved = { navController.popBackStack() }
+                )
             }
 
             composable(

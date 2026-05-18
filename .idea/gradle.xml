@@ -19,6 +19,7 @@
             <option value="$PROJECT_DIR$/feature/analytics" />
             <option value="$PROJECT_DIR$/feature/budgets" />
             <option value="$PROJECT_DIR$/feature/dashboard" />
+            <option value="$PROJECT_DIR$/feature/onboarding" />
             <option value="$PROJECT_DIR$/feature/settings" />
             <option value="$PROJECT_DIR$/feature/transactions" />
           </set>
