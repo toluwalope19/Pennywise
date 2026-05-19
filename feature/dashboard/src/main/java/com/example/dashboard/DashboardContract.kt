@@ -1,10 +1,12 @@
 package com.example.dashboard
 
+import com.example.domain.model.Category
 import com.example.domain.model.Transaction
 import java.time.LocalDate
 
 
 data class DashboardUiState(
+    val categoryMap: Map<Long, Category> = emptyMap(),
     val isLoading: Boolean = false,
     val userName: String = "Alex Park",
     val selectedMonth: Int = LocalDate.now().monthValue,
@@ -27,7 +29,8 @@ data class DashboardMonthlyData(
     val totalIncome: Double,
     val totalExpense: Double,
     val categorySpending: List<CategorySpending>,
-    val recentTransactions: List<Transaction>
+    val recentTransactions: List<Transaction>,
+    val categoryMap: Map<Long, Category>
 )
 
 // ── Events ────────────────────────────────────────────────────────────────

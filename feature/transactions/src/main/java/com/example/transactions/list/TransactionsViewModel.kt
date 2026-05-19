@@ -10,6 +10,7 @@ import androidx.paging.insertSeparators
 import androidx.paging.map
 import com.example.common.mvi.MviViewModel
 import com.example.domain.model.TransactionType
+import com.example.domain.usecase.category.GetCategoriesUseCase
 import com.example.domain.usecase.transaction.GetTransactionsUseCase
 
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,12 +19,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import java.time.YearMonth
 import javax.inject.Inject
 
 @HiltViewModel
 class TransactionsViewModel @Inject constructor(
-    private val getTransactions: GetTransactionsUseCase
+    private val getTransactions: GetTransactionsUseCase,
+    private val getCategories: GetCategoriesUseCase
 ) : MviViewModel<TransactionsUiState, TransactionsUiEvent, TransactionsUiEffect>(
     initialState = TransactionsUiState()
 ) {
@@ -37,6 +40,16 @@ class TransactionsViewModel @Inject constructor(
             TransactionFilter.ALL
         )
     )
+
+    init {
+        viewModelScope.launch {
+            getCategories().collect { categories ->
+                setState {
+                    copy(categoryMap = categories.associateBy { it.id })
+                }
+            }
+        }
+    }
 
     // The paged + separated list — collected directly by the UI
     @OptIn(ExperimentalCoroutinesApi::class)

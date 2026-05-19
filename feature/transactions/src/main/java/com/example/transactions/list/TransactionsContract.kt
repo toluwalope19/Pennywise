@@ -1,6 +1,7 @@
 package com.example.transactions.list
 
 
+import com.example.domain.model.Category
 import com.example.domain.model.Transaction
 import java.time.LocalDate
 import java.time.LocalDate.now
@@ -20,6 +21,7 @@ data class TransactionsUiState(
     val selectedMonth: Int = now().monthValue,
     val selectedYear: Int = now().year,
     val selectedFilter: TransactionFilter = TransactionFilter.ALL,
+    val categoryMap: Map<Long, Category> = emptyMap(),
     val error: String? = null
 )
 

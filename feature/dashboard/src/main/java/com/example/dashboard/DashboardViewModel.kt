@@ -59,7 +59,8 @@ class DashboardViewModel @Inject constructor(
                 getCategories()
             ) { monthlyTransactions, recentTransactions, categories ->
 
-                val categoryMap = categories.associate { it.id to it.name }
+
+                val categoryMap = categories.associateBy { it.id }
 
                 val totalIncome = monthlyTransactions
                     .filter { it.type == TransactionType.INCOME }
@@ -75,7 +76,7 @@ class DashboardViewModel @Inject constructor(
                     .map { (categoryId, txns) ->
                         val amount = txns.sumOf { it.amount }
                         CategorySpending(
-                            categoryName = categoryMap[categoryId] ?: "Other",
+                            categoryName = categoryMap[categoryId]?.name ?: "Other",
                             amount = amount,
                             percentage = if (totalExpense > 0)
                                 (amount / totalExpense * 100).toFloat()
@@ -89,7 +90,8 @@ class DashboardViewModel @Inject constructor(
                     totalIncome = totalIncome,
                     totalExpense = totalExpense,
                     categorySpending = categorySpending,
-                    recentTransactions = recentTransactions
+                    recentTransactions = recentTransactions,
+                    categoryMap = categoryMap
                 )
             }
                 .catch { e ->
@@ -99,6 +101,7 @@ class DashboardViewModel @Inject constructor(
                     // Named fields — crystal clear what each value is
                     setState {
                         copy(
+                            categoryMap = data.categoryMap,
                             isLoading = false,
                             totalIncome = data.totalIncome,
                             totalExpense = data.totalExpense,

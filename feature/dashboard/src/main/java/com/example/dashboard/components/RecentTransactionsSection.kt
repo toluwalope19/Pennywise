@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -31,12 +32,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.common.utils.CurrencyFormatter
+import com.example.domain.model.Category
 import com.example.domain.model.Transaction
 import com.example.domain.model.TransactionType
+import com.example.ui.components.CategoryDisplay
 import com.example.ui.components.CategoryIcon
 import com.example.ui.components.CategoryIconShape
 import com.example.ui.components.CategoryType
 import com.example.ui.components.TransactionRow
+import com.example.ui.components.toDisplay
 import com.example.ui.theme.Expense
 import com.example.ui.theme.Income
 import com.example.ui.theme.InterFontFamily
@@ -53,6 +57,7 @@ import java.time.LocalDate
 fun RecentTransactionsSection(
     transactions: List<Transaction>,
     onSeeAllClick: () -> Unit,
+    categoryMap: Map<Long, Category>,
     onTransactionClick: (Long) -> Unit
 ) {
     Column(
@@ -68,7 +73,8 @@ fun RecentTransactionsSection(
         } else {
             RecentTransactionsCard(
                 transactions = transactions,
-                onTransactionClick = onTransactionClick
+                onTransactionClick = onTransactionClick,
+                categoryMap = categoryMap
             )
         }
     }
@@ -108,6 +114,7 @@ private fun RecentTransactionsHeader(
 @Composable
 private fun RecentTransactionsCard(
     transactions: List<Transaction>,
+    categoryMap: Map<Long, Category>,
     onTransactionClick: (Long) -> Unit
 ) {
     Box(
@@ -125,17 +132,13 @@ private fun RecentTransactionsCard(
             transactions.forEachIndexed { index, transaction ->
                 TransactionRow(
                     transaction = transaction,
-                    categoryType = when (transaction.categoryId) {
-                        1L -> CategoryType.FOOD
-                        2L -> CategoryType.SHOPPING
-                        3L -> CategoryType.HEALTH
-                        4L -> CategoryType.TRANSPORT
-                        5L -> CategoryType.EDUCATION
-                        6L -> CategoryType.UTILITIES
-                        7L -> CategoryType.TRAVEL
-                        8L -> CategoryType.INCOME
-                        else -> CategoryType.OTHER
-                    },
+                    categoryDisplay = categoryMap[transaction.categoryId]
+                        ?.toDisplay()
+                        ?: CategoryDisplay(
+                            name = "Other",
+                            icon = Icons.Rounded.MoreHoriz,
+                            color = Color(0xFF8C8C8C)
+                        ),
                     onClick = { onTransactionClick(transaction.id) }
                 )
                 // Divider between rows — not after last
@@ -192,7 +195,8 @@ private fun RecentTransactionsSectionPreview() {
             RecentTransactionsSection(
                 transactions = emptyList(),
                 onSeeAllClick = {},
-                onTransactionClick = {}
+                onTransactionClick = {},
+                categoryMap = HashMap()
             )
         }
     }
@@ -250,7 +254,8 @@ private fun RecentTransactionsSectionPreviewTwo() {
                     )
                 ),
                 onSeeAllClick = {},
-                onTransactionClick = {}
+                onTransactionClick = {},
+                categoryMap = HashMap()
             )
         }
     }

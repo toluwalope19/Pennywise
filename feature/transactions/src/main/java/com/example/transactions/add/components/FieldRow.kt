@@ -36,6 +36,7 @@ import com.example.transactions.add.AddTransactionUiEvent
 import com.example.transactions.add.AddTransactionUiState
 import com.example.ui.components.CategoryIcon
 import com.example.ui.components.CategoryIconShape
+import com.example.ui.components.toDisplay
 import com.example.ui.theme.InterFontFamily
 import com.example.ui.theme.PennywiseTheme
 import com.example.ui.theme.Surface
@@ -127,7 +128,7 @@ private fun MutedLeadingIcon(icon: ImageVector) {
 // ── All four field rows ────────────────────────────────────────────────────
 
 @Composable
-private fun FieldRows(
+fun FieldRows(
     state: AddTransactionUiState,
     onEvent: (AddTransactionUiEvent) -> Unit
 ) {
@@ -138,16 +139,26 @@ private fun FieldRows(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         // Category
+        val categoryDisplay = state.selectedCategory?.toDisplay()
         FieldRow(
             leadingContent = {
-                CategoryIcon(
-                    categoryType = state.selectedCategory,
-                    size = 40.dp,
-                    shape = CategoryIconShape.ROUNDED_SQUARE
-                )
+                if (categoryDisplay != null) {
+                    CategoryIcon(
+                        display = categoryDisplay,
+                        size = 40.dp,
+                        shape = CategoryIconShape.ROUNDED_SQUARE
+                    )
+                } else {
+                    androidx.compose.foundation.layout.Box(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clip(androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
+                            .background(SurfaceElevated)
+                    )
+                }
             },
             label = "CATEGORY",
-            value = state.selectedCategory.displayName,
+            value = categoryDisplay?.name ?: "Select category",
             onClick = { onEvent(AddTransactionUiEvent.OnCategoryPickerOpen) }
         )
 

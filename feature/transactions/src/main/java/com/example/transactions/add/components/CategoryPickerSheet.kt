@@ -48,8 +48,8 @@ import com.example.ui.theme.TextSecondary
 @Composable
 fun CategoryPickerSheet(
     categories: List<Category>,
-    selectedCategory: CategoryType,
-    onCategorySelected: (CategoryType) -> Unit,
+    selectedCategoryId: Long,
+    onCategorySelected: (Category) -> Unit,
     onDismiss: () -> Unit,
     onCategoryCreated: (name: String, color: Color, icon: ImageVector) -> Unit
 ) {
@@ -58,7 +58,7 @@ fun CategoryPickerSheet(
 
     var searchQuery by remember { mutableStateOf("") }
 
-    val recentCategories = remember {
+    val recentCategoryTypes = remember {
         listOf(
             CategoryType.FOOD,
             CategoryType.TRANSPORT,
@@ -67,17 +67,15 @@ fun CategoryPickerSheet(
         )
     }
 
-    val displayCategories = categories.map { category ->
-        CategoryType.fromName(category.name)
-    }
-
+    // Derive the CategoryType of the current selection for the recent row's highlight
+    val selectedCategoryType = categories.find { it.id == selectedCategoryId }
+        ?.let { CategoryType.fromName(it.name) } ?: CategoryType.FOOD
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         containerColor = Surface,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
         dragHandle = {
-            // Handle pill
             Box(
                 modifier = Modifier
                     .padding(top = 10.dp, bottom = 6.dp)
@@ -102,9 +100,14 @@ fun CategoryPickerSheet(
 
             if (searchQuery.isEmpty()) {
                 RecentCategoriesRow(
-                    recentCategories = recentCategories,
-                    selectedCategory = selectedCategory,
-                    onCategorySelected = onCategorySelected
+                    recentCategories = recentCategoryTypes,
+                    selectedCategory = selectedCategoryType,
+                    onCategorySelected = { type ->
+                        val category = categories.find {
+                            it.name.equals(type.name, ignoreCase = true)
+                        }
+                        if (category != null) onCategorySelected(category)
+                    }
                 )
             }
 
@@ -123,8 +126,8 @@ fun CategoryPickerSheet(
             )
 
             CategoryGrid(
-                categories = displayCategories,
-                selectedCategory = selectedCategory,
+                categories = categories,
+                selectedCategoryId = selectedCategoryId,
                 onCategorySelected = onCategorySelected,
                 onAddNew = { showCreateCategory = true }
             )
@@ -135,7 +138,7 @@ fun CategoryPickerSheet(
         CreateCategorySheet(
             onDismiss = { showCreateCategory = false },
             onCategoryCreated = { name, color, icon ->
-                onCategoryCreated(name, color, icon) // ← bubble up to ViewModel
+                onCategoryCreated(name, color, icon)
                 showCreateCategory = false
             }
         )

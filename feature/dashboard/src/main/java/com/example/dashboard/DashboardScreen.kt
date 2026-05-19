@@ -115,6 +115,7 @@ private fun DashboardContent(
                     onSeeAllClick = {
                         onEvent(DashboardUiEvent.OnSeeAllTransactionsClick)
                     },
+                    categoryMap = state.categoryMap,
                     onTransactionClick = { id ->
                         onEvent(DashboardUiEvent.OnTransactionClick(id))
                     }

@@ -54,6 +54,37 @@ fun CategoryIcon(
     }
 }
 
+@Composable
+fun CategoryIcon(
+    display: CategoryDisplay,
+    modifier: Modifier = Modifier,
+    size: Dp = 44.dp,
+    shape: CategoryIconShape = CategoryIconShape.ROUNDED_SQUARE
+) {
+    val clipShape = when (shape) {
+        CategoryIconShape.CIRCLE -> CircleShape
+        CategoryIconShape.ROUNDED_SQUARE -> RoundedCornerShape(12.dp)
+    }
+    Box(
+        modifier = modifier
+            .size(size)
+            .clip(clipShape)
+            .background(
+                Brush.linearGradient(
+                    colors = listOf(display.color, display.color.copy(alpha = 0.7f))
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = display.icon,
+            contentDescription = display.name,
+            tint = Color.White,
+            modifier = Modifier.size(size * 0.5f)
+        )
+    }
+}
+
 // Settings icon — custom gradient per row, any ImageVector
 @Composable
 fun SettingsIcon(

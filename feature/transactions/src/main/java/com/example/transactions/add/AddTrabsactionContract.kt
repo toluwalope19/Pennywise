@@ -2,11 +2,9 @@ package com.example.transactions.add
 
 
 
-import android.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.domain.model.Category
 import com.example.domain.model.TransactionType
-import com.example.ui.components.CategoryType
 import java.time.LocalDate
 
 // ── UI State ──────────────────────────────────────────────────────────────
@@ -19,8 +17,11 @@ data class AddTransactionUiState(
     // Amount — stored as string so we can handle digit-by-digit input
     val amountInput: String = "0",
 
-    // Selected category
-    val selectedCategory: CategoryType = CategoryType.FOOD,
+    // Selected category — null briefly until categories load from DB
+    val selectedCategory: Category? = null,
+
+    // Name of a just-created category, used to auto-select it after the flow re-emits
+    val pendingCategoryName: String? = null,
 
     // Date — defaults to today
     val selectedDate: LocalDate = LocalDate.now(),
@@ -64,7 +65,7 @@ sealed class AddTransactionUiEvent {
     // Category
     data object OnCategoryPickerOpen : AddTransactionUiEvent()
     data object OnCategoryPickerDismiss : AddTransactionUiEvent()
-    data class OnCategorySelected(val category: CategoryType) : AddTransactionUiEvent()
+    data class OnCategorySelected(val category: Category) : AddTransactionUiEvent()
     data class OnCreateCategory(
         val name: String,
         val color: androidx.compose.ui.graphics.Color,

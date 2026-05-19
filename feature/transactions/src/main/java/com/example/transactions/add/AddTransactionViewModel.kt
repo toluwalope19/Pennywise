@@ -10,7 +10,6 @@ import com.example.domain.model.TransactionType
 import com.example.domain.usecase.category.AddCategoryUseCase
 import com.example.domain.usecase.category.GetCategoriesUseCase
 import com.example.domain.usecase.transaction.AddTransactionUseCase
-import com.example.ui.components.CategoryType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -32,7 +31,21 @@ class AddTransactionViewModel @Inject constructor(
     private fun loadCategories() {
         viewModelScope.launch {
             getCategories().collect { categories ->
-                setState { copy(availableCategories = categories) }
+                setState {
+                    val autoSelect = when {
+                        selectedCategory == null ->
+                            categories.find { it.name.equals("Food", ignoreCase = true) }
+                        pendingCategoryName != null ->
+                            categories.find { it.name == pendingCategoryName }
+                        else -> null
+                    }
+                    copy(
+                        availableCategories = categories,
+                        selectedCategory = autoSelect ?: selectedCategory,
+                        pendingCategoryName = if (autoSelect != null && pendingCategoryName != null) null
+                            else pendingCategoryName
+                    )
+                }
             }
         }
     }
@@ -41,13 +54,17 @@ class AddTransactionViewModel @Inject constructor(
     override fun handleEvent(event: AddTransactionUiEvent) {
         when (event) {
             // Type toggle
-            is AddTransactionUiEvent.OnTypeChanged -> setState {
-                copy(
-                    transactionType = event.type,
-                    // Reset category to sensible default per type
-                    selectedCategory = if (event.type == TransactionType.INCOME)
-                        CategoryType.INCOME else CategoryType.FOOD
-                )
+            is AddTransactionUiEvent.OnTypeChanged -> {
+                val defaultName = if (event.type == TransactionType.INCOME) "Income" else "Food"
+                val defaultCategory = currentState.availableCategories.find {
+                    it.name.equals(defaultName, ignoreCase = true)
+                }
+                setState {
+                    copy(
+                        transactionType = event.type,
+                        selectedCategory = defaultCategory ?: selectedCategory
+                    )
+                }
             }
 
             // Numpad input
@@ -71,22 +88,16 @@ class AddTransactionViewModel @Inject constructor(
                 copy(showCategoryPicker = false)
             }
             is AddTransactionUiEvent.OnCategorySelected -> setState {
-                copy(
-                    selectedCategory = event.category,
-                    showCategoryPicker = false
-                )
+                copy(selectedCategory = event.category, showCategoryPicker = false)
             }
             is AddTransactionUiEvent.OnCreateCategory -> {
                 viewModelScope.launch {
                     try {
-                        // Color → hex string
-                        val colorHex = String.format(
-                            "#%06X",
-                            0xFFFFFF and event.color.toArgb()
-                        )
-
-                        // ImageVector → name string
+                        val colorHex = String.format("#%06X", 0xFFFFFF and event.color.toArgb())
+                        // ImageVector.name returns "Rounded.SportsEsports" or "Rounded/SportsEsports"
                         val iconName = event.icon.name
+                            .substringAfterLast("/")
+                            .substringAfterLast(".")
 
                         addCategory(
                             Category(
@@ -96,14 +107,12 @@ class AddTransactionViewModel @Inject constructor(
                                 isDefault = false
                             )
                         )
-                        // No need to manually refresh — getCategories() Flow
-                        // re-emits automatically when a new row is inserted
+                        // Mark the name as pending; loadCategories() flow will find and select it
+                        setState { copy(pendingCategoryName = event.name, showCategoryPicker = false) }
                     } catch (e: Exception) {
-                        setEffect(
-                            AddTransactionUiEffect.ShowError(
-                                e.message ?: "Failed to create category"
-                            )
-                        )
+                        setEffect(AddTransactionUiEffect.ShowError(
+                            e.message ?: "Failed to create category"
+                        ))
                     }
                 }
             }
@@ -206,9 +215,7 @@ class AddTransactionViewModel @Inject constructor(
         viewModelScope.launch {
             setState { copy(isSaving = true) }
             try {
-                // Resolve categoryId from CategoryType name
-                // Matches the seed order in DatabaseSeeder
-                val categoryId = resolveCategoryId(state.selectedCategory)
+                val categoryId = state.selectedCategory?.id ?: 9L
 
                 addTransaction(
                     Transaction(
@@ -230,19 +237,4 @@ class AddTransactionViewModel @Inject constructor(
         }
     }
 
-    private fun resolveCategoryId(categoryType: CategoryType): Long {
-        return when (categoryType) {
-            CategoryType.FOOD -> 1L
-            CategoryType.SHOPPING -> 2L
-            CategoryType.HEALTH -> 3L
-            CategoryType.TRANSPORT -> 4L
-            CategoryType.EDUCATION -> 5L
-            CategoryType.UTILITIES -> 6L
-            CategoryType.TRAVEL -> 7L
-            CategoryType.INCOME -> 8L
-            CategoryType.SAVINGS -> 8L
-            CategoryType.GROCERIES -> 1L
-            CategoryType.OTHER -> 9L
-        }
-    }
 }

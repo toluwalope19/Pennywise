@@ -33,9 +33,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.domain.model.Category
 import com.example.ui.components.CategoryIcon
 import com.example.ui.components.CategoryIconShape
-import com.example.ui.components.CategoryType
+import com.example.ui.components.toDisplay
 import com.example.ui.theme.Accent
 import com.example.ui.theme.Border
 import com.example.ui.theme.InterFontFamily
@@ -49,9 +50,9 @@ import com.example.ui.theme.TextSecondary
 
 @Composable
 fun CategoryGrid(
-    categories: List<CategoryType>,
-    selectedCategory: CategoryType,
-    onCategorySelected: (CategoryType) -> Unit,
+    categories: List<Category>,
+    selectedCategoryId: Long,
+    onCategorySelected: (Category) -> Unit,
     onAddNew: () -> Unit
 ) {
     LazyVerticalGrid(
@@ -68,11 +69,10 @@ fun CategoryGrid(
         items(categories) { category ->
             CategoryCell(
                 category = category,
-                isSelected = selectedCategory == category,
+                isSelected = category.id == selectedCategoryId,
                 onClick = { onCategorySelected(category) }
             )
         }
-        // Add new cell always last
         item {
             AddNewCategoryCell(onClick = onAddNew)
         }
@@ -83,10 +83,12 @@ fun CategoryGrid(
 
 @Composable
 private fun CategoryCell(
-    category: CategoryType,
+    category: Category,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
+    val display = category.toDisplay()
+
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape(14.dp))
@@ -108,10 +110,9 @@ private fun CategoryCell(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // Icon with checkmark badge when selected
         Box {
             CategoryIcon(
-                categoryType = category,
+                display = display,
                 size = 52.dp,
                 shape = CategoryIconShape.ROUNDED_SQUARE
             )
@@ -123,9 +124,8 @@ private fun CategoryCell(
                 )
             }
         }
-        // Name
         Text(
-            text = category.displayName,
+            text = display.name,
             fontFamily = InterFontFamily,
             fontWeight = FontWeight.Medium,
             fontSize = 11.sp,
@@ -215,19 +215,16 @@ private fun CategoryCellPreview() {
             modifier = Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            // Normal state
             CategoryCell(
-                category = CategoryType.FOOD,
+                category = Category(1, "Food", "restaurant", "#FF8A3D"),
                 isSelected = false,
                 onClick = {}
             )
-            // Selected state
             CategoryCell(
-                category = CategoryType.HEALTH,
+                category = Category(3, "Health", "fitness_center", "#5AE9C8"),
                 isSelected = true,
                 onClick = {}
             )
-            // Add new
             AddNewCategoryCell(onClick = {})
         }
     }
@@ -241,9 +238,13 @@ private fun CategoryCellPreview() {
 private fun CategoryGridPreview() {
     PennywiseTheme {
         CategoryGrid(
-            categories = CategoryType.entries
-                .filter { it != CategoryType.SAVINGS },
-            selectedCategory = CategoryType.HEALTH,
+            categories = listOf(
+                Category(1, "Food", "restaurant", "#FF8A3D"),
+                Category(2, "Shopping", "shopping_bag", "#FF7AC1"),
+                Category(3, "Health", "fitness_center", "#5AE9C8"),
+                Category(4, "Transport", "directions_car", "#4FD1FF"),
+            ),
+            selectedCategoryId = 3L,
             onCategorySelected = {},
             onAddNew = {}
         )

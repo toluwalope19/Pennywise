@@ -15,12 +15,14 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemKey
+import com.example.domain.model.Category
 import com.example.transactions.list.TransactionListItem
 import com.example.ui.theme.Accent
 
 @Composable
 fun TransactionsList(
     transactions: LazyPagingItems<TransactionListItem>,
+    categoryMap: Map<Long, Category>,
     onTransactionClick: (Long) -> Unit
 ) {
     LazyColumn(
@@ -46,6 +48,7 @@ fun TransactionsList(
                 is TransactionListItem.Item -> {
                     TransactionCard(
                         item = item,
+                        categoryMap = categoryMap,
                         onTransactionClick = onTransactionClick
                     )
                 }

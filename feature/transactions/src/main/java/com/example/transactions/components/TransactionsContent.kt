@@ -74,6 +74,7 @@ fun TransactionsContent(
                 else -> {
                     TransactionsList(
                         transactions = transactions,
+                        categoryMap = state.categoryMap,
                         onTransactionClick = { id ->
                             onEvent(TransactionsUiEvent.OnTransactionClick(id))
                         }

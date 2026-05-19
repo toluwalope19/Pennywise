@@ -3,10 +3,15 @@ package com.example.transactions.add
 
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -19,6 +24,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -27,7 +33,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.TransactionType
 import com.example.transactions.add.components.CategoryPickerSheet
+import com.example.transactions.add.components.FieldRow
+import com.example.transactions.add.components.FieldRows
 import com.example.transactions.add.components.HeroAmountCard
+import com.example.transactions.add.components.StickyCta
 import com.example.transactions.add.components.TypeToggle
 import com.example.ui.theme.Accent
 import com.example.ui.theme.Background
@@ -88,6 +97,7 @@ private fun AddTransactionContent(
         contentWindowInsets = WindowInsets(0),
         topBar = {
             CenterAlignedTopAppBar(
+                windowInsets = WindowInsets(0),
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = Background
                 ),
@@ -114,25 +124,60 @@ private fun AddTransactionContent(
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+                .padding(paddingValues)
         ) {
-            TypeToggle(
-                selectedType = state.transactionType,
-                onTypeChanged = { type ->
-                    onEvent(AddTransactionUiEvent.OnTypeChanged(type))
-                }
-            )
+            // Scrollable content
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                // 1 — Type toggle
+                TypeToggle(
+                    selectedType = state.transactionType,
+                    onTypeChanged = { type ->
+                        onEvent(AddTransactionUiEvent.OnTypeChanged(type))
+                    }
+                )
 
-            HeroAmountCard(
-                amountInput = state.amountInput,
+                // 2 — Hero amount card
+                HeroAmountCard(
+                    amountInput = state.amountInput,
+                    transactionType = state.transactionType,
+                    onDigitPressed = { digit ->
+                        onEvent(AddTransactionUiEvent.OnDigitPressed(digit))
+                    },
+                    onDeletePressed = {
+                        onEvent(AddTransactionUiEvent.OnDeletePressed)
+                    },
+                    onDecimalPressed = {
+                        onEvent(AddTransactionUiEvent.OnDecimalPressed)
+                    },
+                    onQuickAmountPressed = { amount ->
+                        onEvent(AddTransactionUiEvent.OnQuickAmountPressed(amount))
+                    }
+                )
+
+                // 3 — Field rows
+                FieldRows(
+                    state = state,
+                    onEvent = onEvent
+                )
+
+                // Space for sticky CTA
+                Spacer(modifier = Modifier.height(100.dp))
+            }
+
+            // 4 — Sticky CTA pinned to bottom
+            StickyCta(
                 transactionType = state.transactionType,
-                onQuickAmountPressed = { amount ->
-                    onEvent(AddTransactionUiEvent.OnQuickAmountPressed(amount))
-                }
+                isSaving = state.isSaving,
+                onSaveClicked = { onEvent(AddTransactionUiEvent.OnSaveClicked) },
+                modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
     }
@@ -140,7 +185,7 @@ private fun AddTransactionContent(
     if (state.showCategoryPicker) {
         CategoryPickerSheet(
             categories = state.availableCategories,
-            selectedCategory = state.selectedCategory,
+            selectedCategoryId = state.selectedCategory?.id ?: 0L,
             onCategorySelected = { category ->
                 onEvent(AddTransactionUiEvent.OnCategorySelected(category))
             },
@@ -151,5 +196,9 @@ private fun AddTransactionContent(
                 onEvent(AddTransactionUiEvent.OnCreateCategory(name, color, icon))
             }
         )
+    }
+
+    if (state.showDatePicker) {
+        // Date picker — next
     }
 }
