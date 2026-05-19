@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -38,6 +39,7 @@ import com.example.transactions.add.components.FieldRows
 import com.example.transactions.add.components.HeroAmountCard
 import com.example.transactions.add.components.StickyCta
 import com.example.transactions.add.components.TypeToggle
+import com.example.ui.components.PennywiseDatePicker
 import com.example.ui.theme.Accent
 import com.example.ui.theme.Background
 import com.example.ui.theme.Income
@@ -133,7 +135,8 @@ private fun AddTransactionContent(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
+                    .verticalScroll(rememberScrollState())
+                    .imePadding(),
                 verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
                 // 1 — Type toggle
@@ -199,6 +202,14 @@ private fun AddTransactionContent(
     }
 
     if (state.showDatePicker) {
-        // Date picker — next
+        PennywiseDatePicker(
+            selectedDate = state.selectedDate,
+            onDateSelected = { date ->
+                onEvent(AddTransactionUiEvent.OnDateSelected(date))
+            },
+            onDismiss = {
+                onEvent(AddTransactionUiEvent.OnDatePickerDismiss)
+            }
+        )
     }
 }

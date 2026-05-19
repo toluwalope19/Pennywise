@@ -16,5 +16,6 @@ interface TransactionRepository {
     fun getTransactionsByMonthList(month: Int, year: Int): Flow<List<Transaction>>
     suspend fun getAllTimeIncome(): Double
     suspend fun getAllTimeExpense(): Double
+    fun getAllTimeBalance(): Flow<Double>
 
 }

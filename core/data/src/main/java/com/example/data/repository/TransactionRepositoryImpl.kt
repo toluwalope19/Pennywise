@@ -10,6 +10,7 @@ import com.example.data.mapper.toEntity
 import com.example.domain.model.Transaction
 import com.example.domain.repository.TransactionRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -73,5 +74,13 @@ class TransactionRepositoryImpl @Inject constructor(
 
     override suspend fun getAllTimeExpense(): Double =
         dao.getTotalExpense() ?: 0.0
+
+    override fun getAllTimeBalance(): Flow<Double> =
+        combine(
+            dao.getTotalIncomeFlow(),
+            dao.getTotalExpenseFlow()
+        ) { income, expense ->
+            (income ?: 0.0) - (expense ?: 0.0)
+        }
 
 }

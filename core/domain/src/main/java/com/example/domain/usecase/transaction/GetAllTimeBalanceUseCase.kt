@@ -1,14 +1,12 @@
 package com.example.domain.usecase.transaction
 
 import com.example.domain.repository.TransactionRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetAllTimeBalanceUseCase @Inject constructor(
     private val repository: TransactionRepository
 ) {
-    suspend operator fun invoke(): Double {
-        val income = repository.getAllTimeIncome()
-        val expense = repository.getAllTimeExpense()
-        return income - expense
-    }
+    operator fun invoke(): Flow<Double> =
+        repository.getAllTimeBalance()
 }

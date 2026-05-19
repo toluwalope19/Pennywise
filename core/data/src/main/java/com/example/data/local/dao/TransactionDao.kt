@@ -51,4 +51,10 @@ interface TransactionDao {
 
     @Query("SELECT SUM(amount) FROM transactions WHERE type = 'EXPENSE'")
     suspend fun getTotalExpense(): Double?
+
+    @Query("SELECT SUM(amount) FROM transactions WHERE type = 'INCOME'")
+    fun getTotalIncomeFlow(): Flow<Double?> // ← Flow not suspend
+
+    @Query("SELECT SUM(amount) FROM transactions WHERE type = 'EXPENSE'")
+    fun getTotalExpenseFlow(): Flow<Double?> // ← Flow not suspend
 }

@@ -47,10 +47,16 @@ class DashboardViewModel @Inject constructor(
     private fun loadDashboard() {
         viewModelScope.launch {
 
-            val allTimeBalance = getAllTimeBalance()
-            setState { copy(totalBalance = allTimeBalance) }
+            launch {
+                getAllTimeBalance().collect { balance ->
+                    setState {
+                        copy(totalBalance = balance)
 
-            combine(
+                    }
+                }
+            }
+
+                    combine(
                 getMonthlyTransactions(
                     currentState.selectedMonth,
                     currentState.selectedYear
