@@ -20,7 +20,7 @@ import com.example.data.local.entity.TransactionEntity
         CategoryEntity::class,
         BudgetEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
