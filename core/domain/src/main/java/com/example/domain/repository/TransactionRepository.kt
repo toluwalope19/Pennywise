@@ -18,4 +18,5 @@ interface TransactionRepository {
     suspend fun getAllTimeExpense(): Double
     fun getAllTimeBalance(): Flow<Double>
 
+
 }

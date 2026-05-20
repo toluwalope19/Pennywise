@@ -16,6 +16,7 @@ import androidx.navigation.navArgument
 import com.example.dashboard.DashboardScreen
 import com.example.onboarding.OnboardingScreen
 import com.example.transactions.add.AddTransactionScreen
+import com.example.transactions.edit.EditTransactionScreen
 import com.example.transactions.list.TransactionsScreen
 import com.example.ui.components.PennywiseBottomNav
 import com.example.ui.theme.Background
@@ -141,10 +142,12 @@ fun PennywiseNavGraph(
                 arguments = listOf(
                     navArgument("id") { type = NavType.LongType }
                 )
-            ) { backStackEntry ->
-                val id = backStackEntry.arguments?.getLong("id") ?: 0L
-                // EditTransactionScreen — coming soon
+            ) {
+                EditTransactionScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
+
 
             composable(Screen.Budgets.route) {
                 // BudgetsScreen — coming soon

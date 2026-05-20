@@ -27,15 +27,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -44,6 +41,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,6 +54,7 @@ import com.example.ui.theme.PennywiseTheme
 import com.example.ui.theme.Surface
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
+import kotlinx.coroutines.delay
 
 @Composable
 fun HeroAmountCard(
@@ -77,12 +77,6 @@ fun HeroAmountCard(
     } else {
         Color(0xFF00E5A0)
     }
-
-    // Split amount into whole and cents
-    val parts = amountInput.split(".")
-    val whole = parts[0]
-    val cents = parts.getOrNull(1)
-    val showDecimal = amountInput.contains(".")
 
     BoxWithConstraints(
         modifier = modifier
@@ -147,7 +141,6 @@ fun HeroAmountCard(
 
             // Quick amount chips
             QuickAmountChips(
-                transactionType = transactionType,
                 onQuickAmountPressed = onQuickAmountPressed
             )
         }
@@ -165,7 +158,6 @@ private fun AmountDisplay(
     onDecimalPressed: () -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
-    var isFocused by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     // Blinking cursor animation
@@ -180,7 +172,6 @@ private fun AmountDisplay(
         label = "cursor_blink"
     )
 
-    // Split amount into whole and cents
     val parts = amountInput.split(".")
     val whole = parts[0]
     val cents = parts.getOrNull(1)
@@ -195,48 +186,34 @@ private fun AmountDisplay(
             },
         contentAlignment = Alignment.Center
     ) {
-        // Hidden BasicTextField — handles actual keyboard input
+        // Hidden BasicTextField — captures software keyboard input via IME
         BasicTextField(
-            value = amountInput,
-            onValueChange = { newValue ->
-                // Process each character change
-                val oldLength = amountInput.length
-                val newLength = newValue.length
-
+            value = TextFieldValue(amountInput, TextRange(amountInput.length)),
+            onValueChange = { new ->
+                val newText = new.text
                 when {
-                    // Delete pressed
-                    newLength < oldLength -> onDeletePressed()
-                    // New character added
-                    newLength > oldLength -> {
-                        val newChar = newValue.last().toString()
+                    newText.length == amountInput.length + 1 && newText.startsWith(amountInput) -> {
+                        val ch = newText.last()
                         when {
-                            newChar == "." -> onDecimalPressed()
-                            newChar.all { it.isDigit() } -> onDigitPressed(newChar)
+                            ch.isDigit() -> onDigitPressed(ch.toString())
+                            ch == '.' || ch == ',' -> onDecimalPressed()
                         }
                     }
+                    newText.length < amountInput.length -> onDeletePressed()
                 }
             },
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Decimal
-            ),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             modifier = Modifier
-                .size(1.dp) // invisible — just captures keyboard
-                .focusRequester(focusRequester)
-                .onFocusChanged { isFocused = it.isFocused },
-            textStyle = androidx.compose.ui.text.TextStyle(
-                fontSize = 1.sp,
-                color = Color.Transparent
-            ),
+                .size(1.dp)
+                .focusRequester(focusRequester),
             cursorBrush = SolidColor(Color.Transparent)
         )
 
-        // Visual amount display
         Row(
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Currency symbol
             Text(
                 text = "₦",
                 fontFamily = InterFontFamily,
@@ -246,8 +223,6 @@ private fun AmountDisplay(
                 letterSpacing = (-1).sp,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
-
-            // Whole number
             Text(
                 text = whole,
                 fontFamily = InterFontFamily,
@@ -257,8 +232,6 @@ private fun AmountDisplay(
                 letterSpacing = (-3).sp,
                 lineHeight = 68.sp
             )
-
-            // Decimal + cents
             if (showDecimal) {
                 Text(
                     text = ".${cents ?: ""}",
@@ -270,8 +243,6 @@ private fun AmountDisplay(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
             }
-
-            // Blinking cursor
             Spacer(modifier = Modifier.width(2.dp))
             Box(
                 modifier = Modifier
@@ -284,8 +255,8 @@ private fun AmountDisplay(
         }
     }
 
-    // Auto-focus and show keyboard on first composition
     LaunchedEffect(Unit) {
+        delay(300)
         focusRequester.requestFocus()
         keyboardController?.show()
     }
@@ -295,7 +266,6 @@ private fun AmountDisplay(
 
 @Composable
 private fun QuickAmountChips(
-    transactionType: TransactionType,
     onQuickAmountPressed: (Double) -> Unit
 ) {
     val quickAmounts = listOf(500.0, 1000.0, 2000.0, 5000.0)
