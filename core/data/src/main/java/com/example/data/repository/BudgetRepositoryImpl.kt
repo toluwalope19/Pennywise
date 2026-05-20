@@ -19,12 +19,22 @@ class BudgetRepositoryImpl @Inject constructor(
             entities.map { it.toDomain() }
         }
 
+    override suspend fun getBudgetById(id: Long): Budget? {
+        return dao.getBudgetById(id)?.toDomain()
+    }
+
     override suspend fun addBudget(budget: Budget) =
-        dao.insertBudget(budget.toEntity())
+        dao.insertBudget(budget.toEntity()).let { Unit }
 
     override suspend fun updateBudget(budget: Budget) =
         dao.updateBudget(budget.toEntity())
 
     override suspend fun deleteBudget(id: Long) =
         dao.deleteBudget(id)
+
+    override suspend fun getBudgetCountForMonth(month: Int, year: Int): Int {
+        return dao.getBudgetCountForMonth(month,year)
+    }
+
+
 }

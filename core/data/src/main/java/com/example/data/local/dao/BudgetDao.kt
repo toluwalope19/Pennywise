@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 interface BudgetDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertBudget(budget: BudgetEntity)
+    suspend fun insertBudget(budget: BudgetEntity): Long
 
     @Update
     suspend fun updateBudget(budget: BudgetEntity)
@@ -25,4 +25,12 @@ interface BudgetDao {
         WHERE month = :month AND year = :year
     """)
     fun getBudgetsByMonth(month: Int, year: Int): Flow<List<BudgetEntity>>
+
+
+    @Query("SELECT * FROM budgets WHERE id = :id")
+    suspend fun getBudgetById(id: Long): BudgetEntity?
+
+
+    @Query("SELECT COUNT(*) FROM budgets WHERE month = :month AND year = :year")
+    suspend fun getBudgetCountForMonth(month: Int, year: Int): Int
 }

@@ -41,4 +41,5 @@ abstract class RepositoryModule {
     abstract fun bindPreferencesRepository(
         impl: PreferencesRepositoryImpl
     ): PreferencesRepository
+
 }

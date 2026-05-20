@@ -24,5 +24,9 @@ data class BudgetEntity(
     val categoryId: Long,
     val amount: Double,
     val month: Int,
-    val year: Int
+    val year: Int,
+    val period: String = "MONTHLY",
+    val startDay: Int = 1,
+    val alertsEnabled: Boolean = true,
+    val alertThreshold: Float = 0.8f
 )
