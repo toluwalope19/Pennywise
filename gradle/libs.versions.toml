@@ -3,6 +3,9 @@ agp = "8.9.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
+mockk = "1.13.12"
+turbine = "1.1.0"
+archCore = "2.2.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.8.0"
 composeBom = "2026.02.01"
@@ -45,6 +48,12 @@ compose-icons-extended = { group = "androidx.compose.material", name = "material
 
 
 javax-inject = { group = "javax.inject", name = "javax.inject", version = "1" }
+
+# Test
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
+coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCore" }
 
 # Core Android
 androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }

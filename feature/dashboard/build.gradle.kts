@@ -32,6 +32,10 @@ dependencies {
     implementation(libs.material)
     implementation(libs.protolite.well.known.types)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.arch.core.testing)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
 

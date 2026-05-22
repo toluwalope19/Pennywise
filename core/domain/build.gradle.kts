@@ -30,4 +30,9 @@ dependencies {
     implementation(libs.paging.runtime)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.javax.inject)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.turbine)
 }
