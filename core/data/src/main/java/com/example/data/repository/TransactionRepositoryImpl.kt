@@ -12,6 +12,7 @@ import com.example.domain.repository.TransactionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 import javax.inject.Inject
 
 class TransactionRepositoryImpl @Inject constructor(
@@ -82,5 +83,12 @@ class TransactionRepositoryImpl @Inject constructor(
         ) { income, expense ->
             (income ?: 0.0) - (expense ?: 0.0)
         }
+
+    override fun getTransactionsInRange(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): Flow<List<Transaction>> =
+        dao.getTransactionsInRange(startDate, endDate)
+            .map { entities -> entities.map { it.toDomain() } }
 
 }

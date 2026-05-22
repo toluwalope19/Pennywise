@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.data.local.entity.TransactionEntity
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @Dao
 interface TransactionDao {
@@ -53,8 +54,19 @@ interface TransactionDao {
     suspend fun getTotalExpense(): Double?
 
     @Query("SELECT SUM(amount) FROM transactions WHERE type = 'INCOME'")
-    fun getTotalIncomeFlow(): Flow<Double?> // ← Flow not suspend
+    fun getTotalIncomeFlow(): Flow<Double?>
 
     @Query("SELECT SUM(amount) FROM transactions WHERE type = 'EXPENSE'")
-    fun getTotalExpenseFlow(): Flow<Double?> // ← Flow not suspend
+    fun getTotalExpenseFlow(): Flow<Double?>
+
+    @Query("""
+    SELECT * FROM transactions 
+    WHERE date >= :startDate 
+    AND date <= :endDate
+    ORDER BY date ASC
+""")
+    fun getTransactionsInRange(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): Flow<List<TransactionEntity>>
 }

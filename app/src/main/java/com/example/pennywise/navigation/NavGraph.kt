@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.example.analytics.AnalyticsScreen
 import com.example.budgets.BudgetsScreen
 import com.example.dashboard.DashboardScreen
 import com.example.onboarding.OnboardingScreen
@@ -155,7 +156,7 @@ fun PennywiseNavGraph(
             }
 
             composable(Screen.Analytics.route) {
-                // AnalyticsScreen — coming soon
+                AnalyticsScreen()
             }
 
             composable(Screen.Settings.route) {

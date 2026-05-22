@@ -4,6 +4,7 @@ package com.example.domain.repository
 import androidx.paging.PagingData
 import com.example.domain.model.Transaction
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 interface TransactionRepository {
     fun getTransactions(): Flow<PagingData<Transaction>>
@@ -17,6 +18,10 @@ interface TransactionRepository {
     suspend fun getAllTimeIncome(): Double
     suspend fun getAllTimeExpense(): Double
     fun getAllTimeBalance(): Flow<Double>
+    fun getTransactionsInRange(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): Flow<List<Transaction>>
 
 
 }
