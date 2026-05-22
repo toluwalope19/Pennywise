@@ -44,8 +44,7 @@ data class NewBudgetState(
     val selectedCategory: Category? = null,
     val availableCategories: List<Category> = emptyList(),
     val period: BudgetPeriod = BudgetPeriod.MONTHLY,
-    val startDate: LocalDate = LocalDate.now()
-        .plusMonths(1).withDayOfMonth(1), // defaults to 1st of next month
+    val startDate: LocalDate = LocalDate.now().withDayOfMonth(1), // defaults to 1st of next month
     val alertsEnabled: Boolean = true,
     val alertThreshold: Float = 0.8f,
     val showCategoryPicker: Boolean = false,

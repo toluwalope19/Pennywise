@@ -93,6 +93,11 @@ private fun BudgetsContent(
         contentWindowInsets = WindowInsets(0),
         topBar = {
             BudgetsTopBar(
+                selectedMonth = state.selectedMonth,
+                selectedYear = state.selectedYear,
+                onMonthChanged = { direction ->
+                    onEvent(BudgetsUiEvent.OnMonthChanged(direction))
+                },
                 onAddClick = { onEvent(BudgetsUiEvent.OnAddBudgetClick) }
             )
         }
@@ -208,16 +213,16 @@ private fun BudgetsContent(
 }
 
 
-@Preview(
-    showBackground = true,
-    backgroundColor = 0xFF0A0A0A
-)
-@Composable
-private fun BudgetsTopBarPreview() {
-    PennywiseTheme {
-        BudgetsTopBar(onAddClick = {})
-    }
-}
+//@Preview(
+//    showBackground = true,
+//    backgroundColor = 0xFF0A0A0A
+//)
+//@Composable
+//private fun BudgetsTopBarPreview() {
+//    PennywiseTheme {
+//        BudgetsTopBar(onAddClick = {})
+//    }
+//}
 
 @Preview(
     showBackground = true,
