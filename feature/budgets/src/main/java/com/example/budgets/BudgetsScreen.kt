@@ -47,7 +47,10 @@ import com.example.budgets.components.BudgetCard
 import com.example.budgets.components.BudgetSummaryCard
 import com.example.budgets.components.BudgetsEmptyState
 import com.example.budgets.components.BudgetsTopBar
+import com.example.budgets.components.NewBudgetSheet
 import com.example.domain.model.Budget
+import com.example.ui.components.CategoryPickerSheet
+import com.example.ui.components.PennywiseDatePicker
 import com.example.ui.theme.Accent
 import com.example.ui.theme.Background
 import com.example.ui.theme.InterFontFamily
@@ -60,6 +63,7 @@ fun BudgetsScreen(
     viewModel: BudgetsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val newBudgetState by viewModel.newBudgetState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -72,6 +76,7 @@ fun BudgetsScreen(
 
     BudgetsContent(
         state = state,
+        newBudgetState = newBudgetState,
         onEvent = viewModel::onEvent
     )
 }
@@ -80,6 +85,7 @@ fun BudgetsScreen(
 @Composable
 private fun BudgetsContent(
     state: BudgetsUiState,
+    newBudgetState: NewBudgetState,
     onEvent: (BudgetsUiEvent) -> Unit
 ) {
     Scaffold(
@@ -165,7 +171,39 @@ private fun BudgetsContent(
 
     // New budget sheet — after UI is built
     if (state.showNewBudgetSheet) {
-        // NewBudgetSheet coming next
+        NewBudgetSheet(
+            state = newBudgetState,
+                onEvent = onEvent,
+            onDismiss = { onEvent(BudgetsUiEvent.OnNewBudgetDismiss) }
+        )
+    }
+
+    if (newBudgetState.showCategoryPicker) {
+        CategoryPickerSheet(
+            categories = newBudgetState.availableCategories,
+            selectedCategoryId = newBudgetState.selectedCategory?.id ?: 0L,
+            onCategorySelected = { category ->
+                onEvent(BudgetsUiEvent.OnCategorySelected(category))
+            },
+            onDismiss = {
+                onEvent(BudgetsUiEvent.OnCategoryPickerDismiss)
+            },
+            onCategoryCreated = { name, color, icon ->
+                // Not needed for budgets
+            }
+        )
+    }
+
+    if (newBudgetState.showDatePicker) {
+        PennywiseDatePicker(
+            selectedDate = newBudgetState.startDate,
+            onDateSelected = { date ->
+                onEvent(BudgetsUiEvent.OnDateSelected(date))
+            },
+            onDismiss = {
+                onEvent(BudgetsUiEvent.OnDatePickerDismiss)
+            }
+        )
     }
 }
 

@@ -1,4 +1,4 @@
-package com.example.transactions.add.components
+package com.example.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -95,7 +96,7 @@ fun CategoryNameField(
                         if (input.length <= maxLength) onNameChanged(input)
                     },
                     singleLine = true,
-                    textStyle = androidx.compose.ui.text.TextStyle(
+                    textStyle = TextStyle(
                         fontFamily = InterFontFamily,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,

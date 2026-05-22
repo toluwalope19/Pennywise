@@ -37,12 +37,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.transactions.add.AddTransactionUiEvent
 import com.example.transactions.add.AddTransactionUiState
-import com.example.transactions.add.components.CategoryPickerSheet
 import com.example.transactions.add.components.FieldRows
-import com.example.transactions.add.components.HeroAmountCard
 import com.example.transactions.add.components.StickyCta
 import com.example.transactions.add.components.TypeToggle
+import com.example.ui.components.CategoryPickerSheet
 import com.example.ui.components.CategoryType
+import com.example.ui.components.HeroAmountCard
 import com.example.ui.components.PennywiseDatePicker
 import com.example.ui.theme.Accent
 import com.example.ui.theme.Background

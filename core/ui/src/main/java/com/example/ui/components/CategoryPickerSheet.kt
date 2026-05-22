@@ -1,5 +1,4 @@
-package com.example.transactions.add.components
-
+package com.example.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,7 +35,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.domain.model.Category
-import com.example.ui.components.CategoryType
 import com.example.ui.theme.InterFontFamily
 import com.example.ui.theme.PennywiseTheme
 import com.example.ui.theme.Surface

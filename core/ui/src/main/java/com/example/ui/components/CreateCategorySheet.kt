@@ -1,5 +1,4 @@
-package com.example.transactions.add.components
-
+package com.example.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -109,9 +108,6 @@ fun CreateCategorySheet(
                 }
             )
 
-            // Color grid — after that
-            // Icon grid — after that
-            // Buttons — last
         }
     }
 }
