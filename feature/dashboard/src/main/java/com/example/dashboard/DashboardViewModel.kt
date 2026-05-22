@@ -41,6 +41,9 @@ class DashboardViewModel @Inject constructor(
             DashboardUiEvent.OnAddTransactionClick -> {
                 setEffect(DashboardUiEffect.NavigateToAddTransaction())
             }
+            DashboardUiEvent.OnSettingsClick -> {
+                setEffect(DashboardUiEffect.NavigateToSettings)
+            }
         }
     }
 

@@ -7,4 +7,6 @@ interface PreferencesRepository {
     suspend fun setHasSeenOnboarding(seen: Boolean)
     fun getCurrencySymbol(): Flow<String>
     suspend fun setCurrency(symbol: String, code: String)
+    suspend fun setSpendingAlerts(enabled: Boolean)
+    suspend fun setWeeklySummary(enabled: Boolean)
 }

@@ -46,4 +46,11 @@ dependencies {
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.paging.compose)
+
+    implementation(libs.compose.icons.extended)          // ← ArrowForward icon
+
+    // Preview
+    implementation(libs.androidx.compose.ui.tooling.preview)     // ← @Preview annotation
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
 }

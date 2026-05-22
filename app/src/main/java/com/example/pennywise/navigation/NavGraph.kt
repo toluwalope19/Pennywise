@@ -17,6 +17,7 @@ import com.example.analytics.AnalyticsScreen
 import com.example.budgets.BudgetsScreen
 import com.example.dashboard.DashboardScreen
 import com.example.onboarding.OnboardingScreen
+import com.example.settings.SettingsScreen
 import com.example.transactions.add.AddTransactionScreen
 import com.example.transactions.edit.EditTransactionScreen
 import com.example.transactions.list.TransactionsScreen
@@ -107,6 +108,9 @@ fun PennywiseNavGraph(
                     },
                     onNavigateToAddTransaction = { type ->
                         navController.navigate(Screen.AddTransaction.createRoute(type))
+                    },
+                    onNavigateToSettings = {
+                        navController.navigate(Screen.Settings.route)
                     }
                 )
             }
@@ -160,7 +164,9 @@ fun PennywiseNavGraph(
             }
 
             composable(Screen.Settings.route) {
-                // SettingsScreen — coming soon
+                SettingsScreen(
+                    onNavigateBack = { navController.popBackStack() }
+                )
             }
         }
     }

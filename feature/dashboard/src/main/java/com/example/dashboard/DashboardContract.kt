@@ -41,6 +41,7 @@ sealed class DashboardUiEvent {
     data class OnTransactionClick(val id: Long) : DashboardUiEvent()
     data object OnSeeAllTransactionsClick : DashboardUiEvent()
     data object OnAddTransactionClick : DashboardUiEvent()
+    data object OnSettingsClick : DashboardUiEvent()
 }
 
 // ── Effects ───────────────────────────────────────────────────────────────
@@ -48,5 +49,6 @@ sealed class DashboardUiEvent {
 sealed class DashboardUiEffect {
     data object NavigateToTransactions : DashboardUiEffect()
     data class NavigateToTransaction(val id: Long) : DashboardUiEffect()
+    data object NavigateToSettings : DashboardUiEffect()
     data class NavigateToAddTransaction(val type: String = "EXPENSE") : DashboardUiEffect()
 }

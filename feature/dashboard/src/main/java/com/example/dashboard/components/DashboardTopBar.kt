@@ -1,6 +1,7 @@
 package com.example.dashboard.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,7 +48,8 @@ fun DashboardTopBar(
     userName: String,
     selectedMonth: Int,
     selectedYear: Int,
-    onMonthChanged: (Int) -> Unit
+    onMonthChanged: (Int) -> Unit,
+    onAvatarClick: () -> Unit
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -83,7 +85,10 @@ fun DashboardTopBar(
                 onMonthChanged = onMonthChanged
             )
             Spacer(modifier = Modifier.width(8.dp))
-            UserAvatar(userName = userName)
+            UserAvatar(
+                userName = userName,
+                onClick = onAvatarClick
+            )
             Spacer(modifier = Modifier.width(16.dp))
         }
     )
@@ -141,7 +146,10 @@ fun MonthNavigatorPill(
 }
 
 @Composable
-private fun UserAvatar(userName: String) {
+private fun UserAvatar(
+    userName: String,
+    onClick: () -> Unit
+) {
     val initials = userName
         .split(" ")
         .take(2)
@@ -152,7 +160,8 @@ private fun UserAvatar(userName: String) {
         modifier = Modifier
             .size(40.dp)
             .clip(CircleShape)
-            .background(Accent),
+            .background(Accent)
+            .clickable { onClick() },
         contentAlignment = Center
     ) {
         Text(
@@ -176,7 +185,8 @@ private fun DashboardTopBarPreview() {
             userName = "Alex Park",
             selectedMonth = 5,
             selectedYear = 2026,
-            onMonthChanged = {}
+            onMonthChanged = {},
+            onAvatarClick = {}
         )
     }
 }

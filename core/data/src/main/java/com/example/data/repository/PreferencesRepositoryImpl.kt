@@ -23,4 +23,11 @@ class PreferencesRepositoryImpl @Inject constructor(
 
     override suspend fun setCurrency(symbol: String, code: String) =
         dataStore.setCurrency(symbol, code)
+
+    override suspend fun setSpendingAlerts(enabled: Boolean) =
+        dataStore.setSpendingAlerts(enabled)
+
+    override suspend fun setWeeklySummary(enabled: Boolean) =
+        dataStore.setWeeklySummary(enabled)
+
 }

@@ -32,6 +32,7 @@ fun DashboardScreen(
     onNavigateToTransactions: () -> Unit,
     onNavigateToTransaction: (Long) -> Unit,
     onNavigateToAddTransaction: (String) -> Unit,
+    onNavigateToSettings: () -> Unit,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -43,6 +44,7 @@ fun DashboardScreen(
                 DashboardUiEffect.NavigateToTransactions -> onNavigateToTransactions()
                 is DashboardUiEffect.NavigateToTransaction -> onNavigateToTransaction(effect.id)
                 is DashboardUiEffect.NavigateToAddTransaction -> onNavigateToAddTransaction(effect.type)
+                DashboardUiEffect.NavigateToSettings -> onNavigateToSettings()
             }
         }
     }
@@ -68,6 +70,9 @@ private fun DashboardContent(
                 selectedYear = state.selectedYear,
                 onMonthChanged = { direction ->
                     onEvent(DashboardUiEvent.OnMonthChanged(direction))
+                },
+                onAvatarClick = {
+                    onEvent(DashboardUiEvent.OnSettingsClick)
                 }
             )
         }
