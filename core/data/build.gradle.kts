@@ -46,4 +46,5 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.paging.runtime)
 
+    testImplementation(libs.junit)
 }
