@@ -47,7 +47,6 @@ fun BudgetsTopBar(
     onAddClick: () -> Unit
 ) {
     TopAppBar(
-        windowInsets = WindowInsets(0),
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Background
         ),

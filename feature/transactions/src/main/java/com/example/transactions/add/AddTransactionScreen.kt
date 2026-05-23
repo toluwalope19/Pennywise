@@ -99,7 +99,6 @@ private fun AddTransactionContent(
         contentWindowInsets = WindowInsets(0),
         topBar = {
             CenterAlignedTopAppBar(
-                windowInsets = WindowInsets(0),
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = Background
                 ),

@@ -77,10 +77,8 @@ private fun AnalyticsContent(
 ) {
     Scaffold(
         containerColor = Background,
-        contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
-                windowInsets = WindowInsets(0),
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Background
                 ),

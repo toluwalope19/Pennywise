@@ -5,16 +5,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
+import androidx.window.core.layout.WindowSizeClass
 import com.example.domain.usecase.preference.GetOnboardingSeenUseCase
 import com.example.pennywise.navigation.PennywiseNavGraph
 import com.example.pennywise.navigation.Screen
@@ -40,6 +41,19 @@ class MainActivity : ComponentActivity() {
         )
         setContent {
             PennywiseTheme {
+
+                // Reactive — updates when window size changes (rotation, foldable)
+                val windowSizeClass by rememberUpdatedState(
+                    WindowSizeClass.compute(
+                        with(LocalDensity.current) {
+                            resources.configuration.screenWidthDp.toFloat()
+                        },
+                        with(LocalDensity.current) {
+                            resources.configuration.screenHeightDp.toFloat()
+                        }
+                    )
+                )
+
                 val hasSeenOnboarding by getOnboardingSeen()
                     .collectAsStateWithLifecycle<Boolean?>(initialValue = null)
 
@@ -47,6 +61,7 @@ class MainActivity : ComponentActivity() {
                     val navController = rememberNavController()
                     PennywiseNavGraph(
                         navController = navController,
+                        windowSizeClass = windowSizeClass,
                         startDestination = if (hasSeenOnboarding == true) {
                             Screen.Dashboard.route
                         } else {

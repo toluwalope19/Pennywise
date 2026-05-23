@@ -1,6 +1,10 @@
 package com.example.pennywise.navigation
 
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -13,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import androidx.window.core.layout.WindowSizeClass
 import com.example.analytics.AnalyticsScreen
 import com.example.budgets.BudgetsScreen
 import com.example.dashboard.DashboardScreen
@@ -22,152 +27,346 @@ import com.example.transactions.add.AddTransactionScreen
 import com.example.transactions.edit.EditTransactionScreen
 import com.example.transactions.list.TransactionsScreen
 import com.example.ui.components.PennywiseBottomNav
+import com.example.ui.components.PennywiseNavigationRail
 import com.example.ui.theme.Background
+
+
+val WindowSizeClass.isExpandedOrMedium: Boolean
+    get() = isWidthAtLeastBreakpoint(
+        WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND  // ← width >= 600dp
+    ) && isHeightAtLeastBreakpoint(
+        WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND // ← AND height >= 480dp
+    )
+
+val WindowSizeClass.isCompact: Boolean
+    get() = !isExpandedOrMedium
 
 @Composable
 fun PennywiseNavGraph(
     navController: NavHostController,
+    windowSizeClass: WindowSizeClass,
     startDestination: String = Screen.Onboarding.route
 ) {
-    // Routes that show the bottom nav
-    val bottomNavRoutes = remember {
-        setOf(
-            Screen.Dashboard.route,
-            Screen.Transactions.route,
-            Screen.Budgets.route,
-            Screen.Analytics.route,
-            Screen.Settings.route
-        )
+    val currentBackStack by navController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStack?.destination?.route
+
+    // Hide nav on these screens
+    val hideNavRoutes = setOf(
+        Screen.Onboarding.route,
+        Screen.AddTransaction.route,
+        Screen.EditTransaction.route,
+        Screen.Settings.route
+    )
+    val showNav = currentRoute !in hideNavRoutes
+
+    // Shared nav click handlers
+    val onHomeClick = {
+        navController.navigate(Screen.Dashboard.route) {
+            popUpTo(Screen.Dashboard.route) { inclusive = true }
+        }
     }
-
-    // Track current route
-    val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = currentBackStackEntry?.destination?.route
-
-    val showBottomNav = currentRoute in bottomNavRoutes
+    val onActivityClick = {
+        navController.navigate(Screen.Transactions.route) {
+            popUpTo(Screen.Dashboard.route)
+        }
+    }
+    val onAddClick = {
+        navController.navigate(Screen.AddTransaction.route)
+    }
+    val onBudgetsClick = {
+        navController.navigate(Screen.Budgets.route) {
+            popUpTo(Screen.Dashboard.route)
+        }
+    }
+    val onAnalyticsClick = {
+        navController.navigate(Screen.Analytics.route) {
+            popUpTo(Screen.Dashboard.route)
+        }
+    }
+    val onAvatarClick = {
+        navController.navigate(Screen.Settings.route)
+    }
 
     Scaffold(
         containerColor = Background,
+        contentWindowInsets = WindowInsets(0),
         bottomBar = {
-            if (showBottomNav) {
+            // BottomNav — only on compact screens (phones)
+            if (windowSizeClass.isCompact && showNav) {
                 PennywiseBottomNav(
                     activeRoute = currentRoute ?: Screen.Dashboard.route,
-                    onHomeClick = {
-                        navController.navigate(Screen.Dashboard.route) {
-                            popUpTo(Screen.Dashboard.route) { inclusive = false }
-                            launchSingleTop = true
-                        }
-                    },
-                    onActivityClick = {
-                        navController.navigate(Screen.Transactions.route) {
-                            popUpTo(Screen.Dashboard.route) { inclusive = false }
-                            launchSingleTop = true
-                        }
-                    },
-                    onAddClick = {
-                        navController.navigate(Screen.AddTransaction.createRoute())
-                    },
-                    onBudgetsClick = {
-                        navController.navigate(Screen.Budgets.route) {
-                            popUpTo(Screen.Dashboard.route) { inclusive = false }
-                            launchSingleTop = true
-                        }
-                    },
-                    onAnalyticsClick = {
-                        navController.navigate(Screen.Analytics.route) {
-                            popUpTo(Screen.Dashboard.route) { inclusive = false }
-                            launchSingleTop = true
-                        }
-                    }
+                    onHomeClick = onHomeClick,
+                    onActivityClick = onActivityClick,
+                    onAddClick = onAddClick,
+                    onBudgetsClick = onBudgetsClick,
+                    onAnalyticsClick = onAnalyticsClick
                 )
             }
         }
     ) { paddingValues ->
-        NavHost(
-            navController = navController,
-            startDestination = startDestination,
-            modifier = Modifier.padding(paddingValues)
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            composable(Screen.Onboarding.route) {
-                OnboardingScreen(
-                    onNavigateToDashboard = {
-                        navController.navigate(Screen.Dashboard.route) {
-                            popUpTo(Screen.Onboarding.route) { inclusive = true }
-                        }
-                    }
+            // NavigationRail — only on medium/expanded screens (tablets, foldables)
+            if (windowSizeClass.isExpandedOrMedium && showNav) {
+                PennywiseNavigationRail(
+                    activeRoute = currentRoute ?: Screen.Dashboard.route,
+                    onHomeClick = onHomeClick,
+                    onActivityClick = onActivityClick,
+                    onAddClick = onAddClick,
+                    onBudgetsClick = onBudgetsClick,
+                    onAnalyticsClick = onAnalyticsClick,
+                    onAvatarClick = onAvatarClick
                 )
             }
 
-            composable(Screen.Dashboard.route) {
-                DashboardScreen(
-                    onNavigateToTransactions = {
-                        navController.navigate(Screen.Transactions.route)
-                    },
-                    onNavigateToTransaction = { id ->
-                        navController.navigate(Screen.EditTransaction.createRoute(id))
-                    },
-                    onNavigateToAddTransaction = { type ->
-                        navController.navigate(Screen.AddTransaction.createRoute(type))
-                    },
-                    onNavigateToSettings = {
-                        navController.navigate(Screen.Settings.route)
-                    }
-                )
-            }
-
-            composable(Screen.Transactions.route) {
-                TransactionsScreen(
-                    onNavigateBack = { navController.popBackStack() },
-                    onNavigateToTransaction = { id ->
-                        navController.navigate(Screen.EditTransaction.createRoute(id))
-                    },
-                    onNavigateToAddTransaction = {
-                        navController.navigate(Screen.AddTransaction.createRoute())
-                    }
-                )
-            }
-
-            composable(
-                route = Screen.AddTransaction.route,
-                arguments = listOf(
-                    navArgument("type") {
-                        type = NavType.StringType
-                        defaultValue = "EXPENSE"
-                    }
-                )
-            ) { backStackEntry ->
-                val type = backStackEntry.arguments?.getString("type") ?: "EXPENSE"
-                AddTransactionScreen(
-                    onNavigateBack = { navController.popBackStack() },
-                    onTransactionSaved = { navController.popBackStack() }
-                )
-            }
-
-            composable(
-                route = Screen.EditTransaction.route,
-                arguments = listOf(
-                    navArgument("id") { type = NavType.LongType }
-                )
+            // NavHost — fills remaining space
+            NavHost(
+                navController = navController,
+                startDestination = startDestination,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
             ) {
-                EditTransactionScreen(
-                    onNavigateBack = { navController.popBackStack() }
-                )
-            }
+
+                composable(Screen.Onboarding.route) {
+                    OnboardingScreen(
+                        onNavigateToDashboard = {
+                            navController.navigate(Screen.Dashboard.route) {
+                                popUpTo(Screen.Onboarding.route) { inclusive = true }
+                            }
+                        }
+                    )
+                }
 
 
-            composable(Screen.Budgets.route) {
-                BudgetsScreen() // ← was commented out
-            }
+                composable(Screen.Dashboard.route) {
+                    DashboardScreen(
+                        onNavigateToTransactions = {
+                            navController.navigate(Screen.Transactions.route)
+                        },
+                        onNavigateToTransaction = { id ->
+                            navController.navigate(
+                                Screen.EditTransaction.createRoute(id)
+                            )
+                        },
+                        onNavigateToAddTransaction = { type ->
+                            navController.navigate(
+                                Screen.AddTransaction.createRoute(type)
+                            )
+                        },
+                        onNavigateToSettings = {
+                            navController.navigate(Screen.Settings.route)
+                        }
+                    )
+                }
 
-            composable(Screen.Analytics.route) {
-                AnalyticsScreen()
-            }
 
-            composable(Screen.Settings.route) {
-                SettingsScreen(
-                    onNavigateBack = { navController.popBackStack() }
-                )
+                composable(Screen.Transactions.route) {
+                    TransactionsScreen(
+                        onNavigateBack = { navController.popBackStack() },
+                        onNavigateToTransaction = { id ->
+                            navController.navigate(Screen.EditTransaction.createRoute(id))
+                        },
+                        onNavigateToAddTransaction = {
+                            navController.navigate(Screen.AddTransaction.createRoute())
+                        }
+                    )
+                }
+
+                composable(
+                    route = Screen.AddTransaction.route,
+                    arguments = listOf(
+                        navArgument("type") {
+                            type = NavType.StringType
+                            defaultValue = "EXPENSE"
+                        }
+                    )
+                ) { backStackEntry ->
+                    val type = backStackEntry.arguments?.getString("type") ?: "EXPENSE"
+                    AddTransactionScreen(
+                        onNavigateBack = { navController.popBackStack() },
+                        onTransactionSaved = { navController.popBackStack() }
+                    )
+                }
+
+                composable(
+                    route = Screen.EditTransaction.route,
+                    arguments = listOf(
+                        navArgument("id") { type = NavType.LongType }
+                    )
+                ) {
+                    EditTransactionScreen(
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+
+                composable(Screen.Budgets.route) {
+                    BudgetsScreen()
+                }
+
+                composable(Screen.Analytics.route) {
+                    AnalyticsScreen()
+                }
+
+                composable(Screen.Settings.route) {
+                    SettingsScreen(
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
             }
         }
     }
 }
+
+//@Composable
+//fun PennywiseNavGraph(
+//    navController: NavHostController,
+//    windowSizeClass: WindowSizeClass,
+//    startDestination: String = Screen.Onboarding.route
+//) {
+//    // Routes that show the bottom nav
+//    val bottomNavRoutes = remember {
+//        setOf(
+//            Screen.Dashboard.route,
+//            Screen.Transactions.route,
+//            Screen.Budgets.route,
+//            Screen.Analytics.route,
+//            Screen.Settings.route
+//        )
+//    }
+//
+//    // Track current route
+//    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+//    val currentRoute = currentBackStackEntry?.destination?.route
+//
+//    val showBottomNav = currentRoute in bottomNavRoutes
+//
+//    Scaffold(
+//        containerColor = Background,
+//        bottomBar = {
+//            if (showBottomNav) {
+//                PennywiseBottomNav(
+//                    activeRoute = currentRoute ?: Screen.Dashboard.route,
+//                    onHomeClick = {
+//                        navController.navigate(Screen.Dashboard.route) {
+//                            popUpTo(Screen.Dashboard.route) { inclusive = false }
+//                            launchSingleTop = true
+//                        }
+//                    },
+//                    onActivityClick = {
+//                        navController.navigate(Screen.Transactions.route) {
+//                            popUpTo(Screen.Dashboard.route) { inclusive = false }
+//                            launchSingleTop = true
+//                        }
+//                    },
+//                    onAddClick = {
+//                        navController.navigate(Screen.AddTransaction.createRoute())
+//                    },
+//                    onBudgetsClick = {
+//                        navController.navigate(Screen.Budgets.route) {
+//                            popUpTo(Screen.Dashboard.route) { inclusive = false }
+//                            launchSingleTop = true
+//                        }
+//                    },
+//                    onAnalyticsClick = {
+//                        navController.navigate(Screen.Analytics.route) {
+//                            popUpTo(Screen.Dashboard.route) { inclusive = false }
+//                            launchSingleTop = true
+//                        }
+//                    }
+//                )
+//            }
+//        }
+//    ) { paddingValues ->
+//        NavHost(
+//            navController = navController,
+//            startDestination = startDestination,
+//            modifier = Modifier.padding(paddingValues)
+//        ) {
+//            composable(Screen.Onboarding.route) {
+//                OnboardingScreen(
+//                    onNavigateToDashboard = {
+//                        navController.navigate(Screen.Dashboard.route) {
+//                            popUpTo(Screen.Onboarding.route) { inclusive = true }
+//                        }
+//                    }
+//                )
+//            }
+//
+//            composable(Screen.Dashboard.route) {
+//                DashboardScreen(
+//                    onNavigateToTransactions = {
+//                        navController.navigate(Screen.Transactions.route)
+//                    },
+//                    onNavigateToTransaction = { id ->
+//                        navController.navigate(Screen.EditTransaction.createRoute(id))
+//                    },
+//                    onNavigateToAddTransaction = { type ->
+//                        navController.navigate(Screen.AddTransaction.createRoute(type))
+//                    },
+//                    onNavigateToSettings = {
+//                        navController.navigate(Screen.Settings.route)
+//                    }
+//                )
+//            }
+//
+//            composable(Screen.Transactions.route) {
+//                TransactionsScreen(
+//                    onNavigateBack = { navController.popBackStack() },
+//                    onNavigateToTransaction = { id ->
+//                        navController.navigate(Screen.EditTransaction.createRoute(id))
+//                    },
+//                    onNavigateToAddTransaction = {
+//                        navController.navigate(Screen.AddTransaction.createRoute())
+//                    }
+//                )
+//            }
+//
+//
+//            composable(
+//                route = Screen.AddTransaction.route,
+//                arguments = listOf(
+//                    navArgument("type") {
+//                        type = NavType.StringType
+//                        defaultValue = "EXPENSE"
+//                    }
+//                )
+//            ) { backStackEntry ->
+//                val type = backStackEntry.arguments?.getString("type") ?: "EXPENSE"
+//                AddTransactionScreen(
+//                    onNavigateBack = { navController.popBackStack() },
+//                    onTransactionSaved = { navController.popBackStack() }
+//                )
+//            }
+//
+//            composable(
+//                route = Screen.EditTransaction.route,
+//                arguments = listOf(
+//                    navArgument("id") { type = NavType.LongType }
+//                )
+//            ) {
+//                EditTransactionScreen(
+//                    onNavigateBack = { navController.popBackStack() }
+//                )
+//            }
+//
+//
+//            composable(Screen.Budgets.route) {
+//                BudgetsScreen() // ← was commented out
+//            }
+//
+//            composable(Screen.Analytics.route) {
+//                AnalyticsScreen()
+//            }
+//
+//            composable(Screen.Settings.route) {
+//                SettingsScreen(
+//                    onNavigateBack = { navController.popBackStack() }
+//                )
+//            }
+//        }
+//    }
+//}

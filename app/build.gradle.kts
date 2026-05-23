@@ -61,6 +61,8 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
+    implementation(libs.androidx.window)
+    implementation(libs.androidx.window.core)
 
     implementation(project(":core:common"))
     implementation(project(":core:domain"))
@@ -74,4 +76,5 @@ dependencies {
     implementation(project(":feature:budgets"))
     implementation(project(":feature:analytics"))
     implementation(project(":feature:settings"))
+
 }

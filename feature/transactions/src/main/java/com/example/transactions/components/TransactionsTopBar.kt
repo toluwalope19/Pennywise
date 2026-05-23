@@ -30,7 +30,6 @@ fun TransactionsTopBar(
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = Background
         ),
-        windowInsets = WindowInsets(0),
         navigationIcon = {
             IconButton(onClick = onBackClick) {
                 Icon(

@@ -55,7 +55,6 @@ fun DashboardTopBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Background
         ),
-        windowInsets = WindowInsets(0),
         title = {
             Column(
                 modifier = Modifier
