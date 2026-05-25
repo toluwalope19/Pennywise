@@ -54,6 +54,8 @@ dependencies {
     implementation(libs.paging.compose)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.compose.icons.extended)
+    implementation(libs.androidx.window)
+    implementation(libs.androidx.window.core)
 
 
     implementation(libs.compose.icons.extended)          // ← ArrowForward icon

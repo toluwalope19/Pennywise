@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,29 +27,30 @@ import com.example.settings.SettingsScreen
 import com.example.transactions.add.AddTransactionScreen
 import com.example.transactions.edit.EditTransactionScreen
 import com.example.transactions.list.TransactionsScreen
+import com.example.ui.PennywiseWindowLayout
 import com.example.ui.components.PennywiseBottomNav
 import com.example.ui.components.PennywiseNavigationRail
 import com.example.ui.theme.Background
 
 
-val WindowSizeClass.isExpandedOrMedium: Boolean
-    get() = isWidthAtLeastBreakpoint(
-        WindowSizeClass.WIDTH_DP_MEDIUM_LOWER_BOUND  // ← width >= 600dp
-    ) && isHeightAtLeastBreakpoint(
-        WindowSizeClass.HEIGHT_DP_MEDIUM_LOWER_BOUND // ← AND height >= 480dp
-    )
-
-val WindowSizeClass.isCompact: Boolean
-    get() = !isExpandedOrMedium
 
 @Composable
 fun PennywiseNavGraph(
     navController: NavHostController,
-    windowSizeClass: WindowSizeClass,
+    windowLayout: PennywiseWindowLayout,
     startDestination: String = Screen.Onboarding.route
 ) {
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentRoute = currentBackStack?.destination?.route
+
+    // Replace isCompact / isExpandedOrMedium with:
+    val showRail = windowLayout is PennywiseWindowLayout.TabletPortrait ||
+            windowLayout is PennywiseWindowLayout.TabletLandscape ||
+            windowLayout is PennywiseWindowLayout.Foldable
+
+    val showBottomNav = windowLayout is PennywiseWindowLayout.PhonePortrait ||
+            windowLayout is PennywiseWindowLayout.PhoneLandscape
+
 
     // Hide nav on these screens
     val hideNavRoutes = setOf(
@@ -89,10 +91,10 @@ fun PennywiseNavGraph(
 
     Scaffold(
         containerColor = Background,
-        contentWindowInsets = WindowInsets(0),
+        contentWindowInsets = WindowInsets.statusBars,
         bottomBar = {
             // BottomNav — only on compact screens (phones)
-            if (windowSizeClass.isCompact && showNav) {
+            if (showBottomNav && showNav) {
                 PennywiseBottomNav(
                     activeRoute = currentRoute ?: Screen.Dashboard.route,
                     onHomeClick = onHomeClick,
@@ -110,7 +112,7 @@ fun PennywiseNavGraph(
                 .padding(paddingValues)
         ) {
             // NavigationRail — only on medium/expanded screens (tablets, foldables)
-            if (windowSizeClass.isExpandedOrMedium && showNav) {
+            if (showRail && showNav) {
                 PennywiseNavigationRail(
                     activeRoute = currentRoute ?: Screen.Dashboard.route,
                     onHomeClick = onHomeClick,
@@ -159,7 +161,8 @@ fun PennywiseNavGraph(
                         },
                         onNavigateToSettings = {
                             navController.navigate(Screen.Settings.route)
-                        }
+                        },
+                        windowLayout = windowLayout
                     )
                 }
 
@@ -172,7 +175,8 @@ fun PennywiseNavGraph(
                         },
                         onNavigateToAddTransaction = {
                             navController.navigate(Screen.AddTransaction.createRoute())
-                        }
+                        },
+                        windowLayout = windowLayout
                     )
                 }
 

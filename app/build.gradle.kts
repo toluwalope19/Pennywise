@@ -68,6 +68,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:data"))
     implementation(project(":core:ui"))
+    implementation(libs.androidx.window.java)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
     implementation(project(":feature:onboarding"))

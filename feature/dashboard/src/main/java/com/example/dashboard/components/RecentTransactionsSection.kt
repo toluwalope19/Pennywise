@@ -58,7 +58,8 @@ fun RecentTransactionsSection(
     transactions: List<Transaction>,
     onSeeAllClick: () -> Unit,
     categoryMap: Map<Long, Category>,
-    onTransactionClick: (Long) -> Unit
+    onTransactionClick: (Long) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),

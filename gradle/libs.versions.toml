@@ -47,6 +47,8 @@ material = { group = "com.google.android.material", name = "material", version.r
 compose-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 androidx-window = { group = "androidx.window", name = "window", version.ref = "androidxWindow" }
 androidx-window-core = { group = "androidx.window", name = "window-core", version.ref = "androidxWindow" }
+androidx-window-java = { group = "androidx.window", name = "window-java", version.ref = "androidxWindow" }
+
 
 
 

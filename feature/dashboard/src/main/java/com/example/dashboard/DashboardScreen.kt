@@ -17,10 +17,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.dashboard.adaptable.DashboardFoldableLayout
+import com.example.dashboard.adaptable.DashboardPhoneLandscapeLayout
+import com.example.dashboard.adaptable.DashboardPhonePortraitLayout
+import com.example.dashboard.adaptable.DashboardTabletLandscapeLayout
+import com.example.dashboard.adaptable.DashboardTabletPortraitLayout
 import com.example.dashboard.components.BalanceHeroSection
 import com.example.dashboard.components.DashboardTopBar
 import com.example.dashboard.components.DonutCard
 import com.example.dashboard.components.RecentTransactionsSection
+import com.example.ui.PennywiseWindowLayout
 import com.example.ui.components.PennywiseBottomNav
 import com.example.ui.components.PennywiseRoutes
 import com.example.ui.theme.Accent
@@ -33,6 +39,7 @@ fun DashboardScreen(
     onNavigateToTransaction: (Long) -> Unit,
     onNavigateToAddTransaction: (String) -> Unit,
     onNavigateToSettings: () -> Unit,
+    windowLayout: PennywiseWindowLayout = PennywiseWindowLayout.PhonePortrait,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -51,6 +58,7 @@ fun DashboardScreen(
 
     DashboardContent(
         state = state,
+        windowLayout = windowLayout,
         onEvent = viewModel::onEvent
     )
 }
@@ -58,6 +66,7 @@ fun DashboardScreen(
 @Composable
 private fun DashboardContent(
     state: DashboardUiState,
+    windowLayout: PennywiseWindowLayout,
     onEvent: (DashboardUiEvent) -> Unit
 ) {
     Scaffold(
@@ -88,6 +97,50 @@ private fun DashboardContent(
                 CircularProgressIndicator(color = Accent)
             }
             return@Scaffold
+        }
+
+        when (windowLayout) {
+            is PennywiseWindowLayout.PhonePortrait ->
+                DashboardPhonePortraitLayout(
+                    state = state,
+                    onEvent = onEvent,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                )
+            is PennywiseWindowLayout.PhoneLandscape ->
+                DashboardPhoneLandscapeLayout(
+                    state = state,
+                    onEvent = onEvent,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                )
+            is PennywiseWindowLayout.TabletPortrait ->
+                DashboardTabletPortraitLayout(
+                    state = state,
+                    onEvent = onEvent,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                )
+            is PennywiseWindowLayout.TabletLandscape ->
+                DashboardTabletLandscapeLayout(
+                    state = state,
+                    onEvent = onEvent,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                )
+            is PennywiseWindowLayout.Foldable ->
+                DashboardFoldableLayout(
+                    state = state,
+                    foldingFeature = windowLayout.foldingFeature,
+                    onEvent = onEvent,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                )
         }
 
         LazyColumn(

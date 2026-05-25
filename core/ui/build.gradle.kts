@@ -36,6 +36,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
     implementation(libs.androidx.window.core)
+    implementation(libs.androidx.window)
 
     implementation(project(":core:common"))
     implementation(project(":core:domain"))

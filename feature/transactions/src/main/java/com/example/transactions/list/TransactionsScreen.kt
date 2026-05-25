@@ -7,12 +7,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.transactions.components.TransactionsContent
+import com.example.ui.PennywiseWindowLayout
 
 @Composable
 fun TransactionsScreen(
     onNavigateBack: () -> Unit,
     onNavigateToTransaction: (Long) -> Unit,
     onNavigateToAddTransaction: () -> Unit,
+    windowLayout: PennywiseWindowLayout,
     viewModel: TransactionsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
