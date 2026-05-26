@@ -194,7 +194,8 @@ fun PennywiseNavGraph(
                     val type = backStackEntry.arguments?.getString("type") ?: "EXPENSE"
                     AddTransactionScreen(
                         onNavigateBack = { navController.popBackStack() },
-                        onTransactionSaved = { navController.popBackStack() }
+                        onTransactionSaved = { navController.popBackStack() },
+                        windowLayout = windowLayout
                     )
                 }
 
@@ -223,9 +224,11 @@ fun PennywiseNavGraph(
 
                     EditTransactionScreen(
                         onNavigateBack = { navController.popBackStack() },
+                        windowLayout = windowLayout,
                         viewModel = viewModel
                     )
                 }
+
 
                 composable(Screen.Budgets.route) {
                     BudgetsScreen()

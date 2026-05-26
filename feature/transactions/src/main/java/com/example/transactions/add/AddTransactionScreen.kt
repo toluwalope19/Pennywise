@@ -33,10 +33,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.domain.model.TransactionType
+import com.example.transactions.add.components.AddTransactionFoldableLayout
+import com.example.transactions.add.components.AddTransactionTabletLandscapeLayout
 
 import com.example.transactions.add.components.FieldRows
 import com.example.transactions.add.components.StickyCta
 import com.example.transactions.add.components.TypeToggle
+import com.example.ui.PennywiseWindowLayout
 import com.example.ui.components.CategoryPickerSheet
 import com.example.ui.components.HeroAmountCard
 import com.example.ui.components.PennywiseDatePicker
@@ -51,6 +54,7 @@ import com.example.ui.theme.TextPrimary
 fun AddTransactionScreen(
     onNavigateBack: () -> Unit,
     onTransactionSaved: () -> Unit,
+    windowLayout: PennywiseWindowLayout = PennywiseWindowLayout.PhonePortrait,
     viewModel: AddTransactionViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -71,13 +75,15 @@ fun AddTransactionScreen(
 
     AddTransactionContent(
         state = state,
+        windowLayout,
         onEvent = viewModel::onEvent
     )
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AddTransactionContent(
+private fun AddTransactionPhoneLayout(
     state: AddTransactionUiState,
     onEvent: (AddTransactionUiEvent) -> Unit
 ) {
@@ -210,5 +216,32 @@ private fun AddTransactionContent(
                 onEvent(AddTransactionUiEvent.OnDatePickerDismiss)
             }
         )
+    }
+}
+
+@Composable
+private fun AddTransactionContent(
+    state: AddTransactionUiState,
+    windowLayout: PennywiseWindowLayout,
+    onEvent: (AddTransactionUiEvent) -> Unit
+) {
+    when (windowLayout) {
+        is PennywiseWindowLayout.TabletLandscape ->
+            AddTransactionTabletLandscapeLayout(
+                state = state,
+                onEvent = onEvent
+            )
+        is PennywiseWindowLayout.Foldable ->
+            AddTransactionFoldableLayout(
+                state = state,
+                foldingFeature = windowLayout.foldingFeature,
+                onEvent = onEvent
+            )
+        else ->
+            // existing phone layout — unchanged
+            AddTransactionPhoneLayout(
+                state = state,
+                onEvent = onEvent
+            )
     }
 }

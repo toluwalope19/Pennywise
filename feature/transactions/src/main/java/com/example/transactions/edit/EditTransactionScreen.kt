@@ -40,8 +40,8 @@ import com.example.transactions.add.AddTransactionUiState
 import com.example.transactions.add.components.FieldRows
 import com.example.transactions.add.components.StickyCta
 import com.example.transactions.add.components.TypeToggle
+import com.example.ui.PennywiseWindowLayout
 import com.example.ui.components.CategoryPickerSheet
-import com.example.ui.components.CategoryType
 import com.example.ui.components.HeroAmountCard
 import com.example.ui.components.PennywiseDatePicker
 import com.example.ui.theme.Accent
@@ -53,6 +53,7 @@ import com.example.ui.theme.TextPrimary
 @Composable
 fun EditTransactionScreen(
     onNavigateBack: () -> Unit,
+    windowLayout: PennywiseWindowLayout = PennywiseWindowLayout.PhonePortrait,
     viewModel: EditTransactionViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -70,13 +71,14 @@ fun EditTransactionScreen(
 
     EditTransactionContent(
         state = state,
+        windowLayout = windowLayout,
         onEvent = viewModel::onEvent
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EditTransactionContent(
+private fun EditTransactionPhoneLayout(
     state: EditTransactionUiState,
     onEvent: (EditTransactionUiEvent) -> Unit
 ) {
@@ -286,6 +288,32 @@ fun DeleteConfirmDialog(
             }
         }
     )
+}
+
+@Composable
+private fun EditTransactionContent(
+    state: EditTransactionUiState,
+    windowLayout: PennywiseWindowLayout, // ← add
+    onEvent: (EditTransactionUiEvent) -> Unit
+) {
+    when (windowLayout) {
+        is PennywiseWindowLayout.TabletLandscape ->
+            EditTransactionTabletLandscapeLayout(
+                state = state,
+                onEvent = onEvent
+            )
+        is PennywiseWindowLayout.Foldable ->
+            EditTransactionFoldableLayout(
+                state = state,
+                foldingFeature = windowLayout.foldingFeature,
+                onEvent = onEvent
+            )
+        else ->
+            EditTransactionPhoneLayout(
+                state = state,
+                onEvent = onEvent
+            )
+    }
 }
 
 // Maps EditTransactionUiState → AddTransactionUiState for reusing FieldRows
