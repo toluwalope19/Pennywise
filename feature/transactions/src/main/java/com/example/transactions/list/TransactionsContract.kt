@@ -22,6 +22,7 @@ data class TransactionsUiState(
     val selectedYear: Int = now().year,
     val selectedFilter: TransactionFilter = TransactionFilter.ALL,
     val categoryMap: Map<Long, Category> = emptyMap(),
+    val selectedTransactionId: Long? = null,
     val error: String? = null
 )
 
@@ -42,6 +43,8 @@ sealed class TransactionsUiEvent {
     data class OnTransactionClick(val id: Long) : TransactionsUiEvent()
     data object OnAddTransactionClick : TransactionsUiEvent()
     data object OnBackClick : TransactionsUiEvent()
+    data class OnTransactionSelected(val id: Long) : TransactionsUiEvent()
+    data object OnSelectionCleared : TransactionsUiEvent()
 }
 
 // ── Effects ────────────────────────────────────────────────────────────────

@@ -240,7 +240,7 @@ private fun EditTransactionContent(
 // ── Delete confirmation dialog ─────────────────────────────────────────────
 
 @Composable
-private fun DeleteConfirmDialog(
+fun DeleteConfirmDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -289,7 +289,7 @@ private fun DeleteConfirmDialog(
 }
 
 // Maps EditTransactionUiState → AddTransactionUiState for reusing FieldRows
-private fun EditTransactionUiState.toAddState() =
+fun EditTransactionUiState.toAddState() =
     AddTransactionUiState(
         transactionType = transactionType,
         amountInput = amountInput,
@@ -303,7 +303,7 @@ private fun EditTransactionUiState.toAddState() =
     )
 
 // Maps AddTransactionUiEvent → EditTransactionUiEvent
-private fun AddTransactionUiEvent.toEditEvent():
+fun AddTransactionUiEvent.toEditEvent():
         EditTransactionUiEvent = when (this) {
     is AddTransactionUiEvent.OnCategoryPickerOpen ->
         EditTransactionUiEvent.OnCategoryPickerOpen

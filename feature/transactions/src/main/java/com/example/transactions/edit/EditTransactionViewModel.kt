@@ -10,13 +10,16 @@ import com.example.domain.usecase.category.GetCategoriesUseCase
 import com.example.domain.usecase.transaction.DeleteTransactionUseCase
 import com.example.domain.usecase.transaction.GetTransactionByIdUseCase
 import com.example.domain.usecase.transaction.UpdateTransactionUseCase
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
-class EditTransactionViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+@HiltViewModel(assistedFactory = EditTransactionViewModel.Factory::class)
+class EditTransactionViewModel @AssistedInject constructor(
+    @Assisted val transactionId: Long,
     private val getTransactionById: GetTransactionByIdUseCase,
     private val updateTransaction: UpdateTransactionUseCase,
     private val deleteTransaction: DeleteTransactionUseCase,
@@ -24,9 +27,12 @@ class EditTransactionViewModel @Inject constructor(
 ) : MviViewModel<EditTransactionUiState, EditTransactionUiEvent, EditTransactionUiEffect>(
     initialState = EditTransactionUiState()
 ) {
-    // Get transaction ID from nav argument
-    private val transactionId: Long =
-        checkNotNull(savedStateHandle["id"])
+
+
+    @AssistedFactory
+    interface Factory {
+        fun create(transactionId: Long): EditTransactionViewModel
+    }
 
     init {
         loadTransaction()

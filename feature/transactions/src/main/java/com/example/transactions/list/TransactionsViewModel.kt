@@ -116,6 +116,12 @@ class TransactionsViewModel @Inject constructor(
             TransactionsUiEvent.OnBackClick -> {
                 setEffect(TransactionsUiEffect.NavigateBack)
             }
+            is TransactionsUiEvent.OnTransactionSelected -> setState {
+                copy(selectedTransactionId = event.id)
+            }
+            TransactionsUiEvent.OnSelectionCleared -> setState {
+                copy(selectedTransactionId = null)
+            }
         }
     }
 

@@ -12,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -25,7 +26,8 @@ import com.example.ui.theme.Background
 fun TransactionsContent(
     state: TransactionsUiState,
     transactions: LazyPagingItems<TransactionListItem>,
-    onEvent: (TransactionsUiEvent) -> Unit
+    onEvent: (TransactionsUiEvent) -> Unit,
+    horizontalPadding: Dp = 16.dp
 ) {
     Scaffold(
         containerColor = Background,

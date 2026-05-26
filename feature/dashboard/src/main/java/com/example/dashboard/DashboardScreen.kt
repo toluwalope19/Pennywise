@@ -142,44 +142,6 @@ private fun DashboardContent(
                         .padding(paddingValues)
                 )
         }
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues), // ← this is the key line
-            contentPadding = PaddingValues(
-                horizontal = 16.dp,
-                vertical = 12.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Components slot in here one by one
-            item {
-                BalanceHeroSection(
-                    totalBalance = state.totalBalance,
-                    totalIncome = state.totalIncome,
-                    totalExpense = state.totalExpense
-                )
-            }
-            item {
-                DonutCard(
-                    totalExpense = state.totalExpense,
-                    categorySpending = state.spendingByCategory,
-                )
-            }
-            item {
-                RecentTransactionsSection(
-                    transactions = state.recentTransactions,
-                    onSeeAllClick = {
-                        onEvent(DashboardUiEvent.OnSeeAllTransactionsClick)
-                    },
-                    categoryMap = state.categoryMap,
-                    onTransactionClick = { id ->
-                        onEvent(DashboardUiEvent.OnTransactionClick(id))
-                    }
-                )
-            }
-        }
     }
 }
 

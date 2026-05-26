@@ -22,7 +22,7 @@ fun FilterChipsRow(
     selectedFilter: TransactionFilter,
     selectedMonth: Int,
     selectedYear: Int,
-    onFilterChanged: (TransactionFilter) -> Unit
+    onFilterChanged: (TransactionFilter) -> Unit,
 ) {
     val monthName = Month.of(selectedMonth)
         .getDisplayName(TextStyle.FULL, Locale.getDefault())

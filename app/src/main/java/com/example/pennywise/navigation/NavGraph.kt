@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -26,6 +27,7 @@ import com.example.onboarding.OnboardingScreen
 import com.example.settings.SettingsScreen
 import com.example.transactions.add.AddTransactionScreen
 import com.example.transactions.edit.EditTransactionScreen
+import com.example.transactions.edit.EditTransactionViewModel
 import com.example.transactions.list.TransactionsScreen
 import com.example.ui.PennywiseWindowLayout
 import com.example.ui.components.PennywiseBottomNav
@@ -204,6 +206,24 @@ fun PennywiseNavGraph(
                 ) {
                     EditTransactionScreen(
                         onNavigateBack = { navController.popBackStack() }
+                    )
+                }
+
+                composable(
+                    route = Screen.EditTransaction.route,
+                    arguments = listOf(
+                        navArgument("id") { type = NavType.LongType }
+                    )
+                ) { backStackEntry ->
+                    val id = backStackEntry.arguments?.getLong("id") ?: 0L
+                    val viewModel = hiltViewModel<EditTransactionViewModel,
+                            EditTransactionViewModel.Factory> { factory ->
+                        factory.create(id)
+                    }
+
+                    EditTransactionScreen(
+                        onNavigateBack = { navController.popBackStack() },
+                        viewModel = viewModel
                     )
                 }
 
