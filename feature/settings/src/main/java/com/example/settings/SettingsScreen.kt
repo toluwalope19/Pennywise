@@ -43,9 +43,12 @@ import com.example.settings.components.SectionLabel
 import com.example.settings.components.SettingsDivider
 import com.example.settings.components.SettingsGroupCard
 import com.example.settings.components.SettingsRow
+import com.example.settings.components.SettingsSingleColumnLayout
 import com.example.settings.components.SettingsSwitch
+import com.example.settings.components.SettingsTabletLayout
 import com.example.settings.components.TrailingChevron
 import com.example.settings.components.TrailingText
+import com.example.ui.PennywiseWindowLayout
 import com.example.ui.theme.Background
 import com.example.ui.theme.Expense
 import com.example.ui.theme.InterFontFamily
@@ -55,6 +58,7 @@ import com.example.ui.theme.TextPrimary
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
+    windowLayout: PennywiseWindowLayout = PennywiseWindowLayout.PhonePortrait,
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -71,6 +75,7 @@ fun SettingsScreen(
 
     SettingsContent(
         state = state,
+        windowLayout = windowLayout,
         onEvent = viewModel::onEvent
     )
 }
@@ -79,6 +84,7 @@ fun SettingsScreen(
 @Composable
 private fun SettingsContent(
     state: SettingsUiState,
+    windowLayout: PennywiseWindowLayout,
     onEvent: (SettingsUiEvent) -> Unit
 ) {
     Scaffold(
@@ -86,6 +92,7 @@ private fun SettingsContent(
         contentWindowInsets = WindowInsets(0),
         topBar = {
             CenterAlignedTopAppBar(
+                windowInsets = WindowInsets(top = 0),
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = Background
                 ),
@@ -112,121 +119,26 @@ private fun SettingsContent(
             )
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Profile
-            ProfileSection(state = state)
 
-            // Preferences
-            SectionLabel(text = "Preferences")
-            SettingsGroupCard {
-                SettingsRow(
-                    icon = Icons.Rounded.Payments,
-                    iconGradient = Brush.linearGradient(
-                        listOf(Color(0xFFFFD25A), Color(0xFFE8A625))
-                    ),
-                    label = "Currency",
-                    trailing = {
-                        TrailingText("${state.currencySymbol} ${state.currencyName}")
-                    },
-                    onClick = { onEvent(SettingsUiEvent.OnCurrencyClicked) }
-                )
-                SettingsDivider()
-                SettingsRow(
-                    icon = Icons.Rounded.DarkMode,
-                    iconGradient = Brush.linearGradient(
-                        listOf(Color(0xFF4FD1FF), Color(0xFF2680E8))
-                    ),
-                    label = "Theme",
-                    trailing = {
-                        TrailingText("Dark")
-                    },
-                    onClick = { onEvent(SettingsUiEvent.OnThemeClicked) }
-                )
-            }
+        val isWideLayout = windowLayout is PennywiseWindowLayout.TabletLandscape ||
+                windowLayout is PennywiseWindowLayout.Foldable
 
-            // Notifications
-            SectionLabel(text = "Notifications")
-            SettingsGroupCard {
-                SettingsRow(
-                    icon = Icons.Rounded.Notifications,
-                    iconGradient = Brush.linearGradient(
-                        listOf(Color(0xFFFF7AC1), Color(0xFFA14BFF))
-                    ),
-                    label = "Spending alerts",
-                    trailing = {
-                        SettingsSwitch(
-                            checked = state.spendingAlertsEnabled,
-                            onCheckedChange = {
-                                onEvent(SettingsUiEvent.OnSpendingAlertsToggled(it))
-                            }
-                        )
-                    },
-                    onClick = {
-                        onEvent(
-                            SettingsUiEvent.OnSpendingAlertsToggled(
-                                !state.spendingAlertsEnabled
-                            )
-                        )
-                    }
-                )
-                SettingsDivider()
-                SettingsRow(
-                    icon = Icons.Rounded.Summarize,
-                    iconGradient = Brush.linearGradient(
-                        listOf(Color(0xFF5AE9C8), Color(0xFF0BA67B))
-                    ),
-                    label = "Weekly summary",
-                    trailing = {
-                        SettingsSwitch(
-                            checked = state.weeklySummaryEnabled,
-                            onCheckedChange = {
-                                onEvent(SettingsUiEvent.OnWeeklySummaryToggled(it))
-                            }
-                        )
-                    },
-                    onClick = {
-                        onEvent(
-                            SettingsUiEvent.OnWeeklySummaryToggled(
-                                !state.weeklySummaryEnabled
-                            )
-                        )
-                    }
-                )
-            }
-
-            // Data
-            SectionLabel(text = "Data")
-            SettingsGroupCard {
-                SettingsRow(
-                    icon = Icons.Rounded.Download,
-                    iconGradient = Brush.linearGradient(
-                        listOf(Color(0xFFB79CFF), Color(0xFF5B36D1))
-                    ),
-                    label = "Export as CSV",
-                    trailing = { TrailingChevron() },
-                    onClick = { onEvent(SettingsUiEvent.OnExportCSVClicked) }
-                )
-                SettingsDivider()
-                SettingsRow(
-                    icon = Icons.Rounded.Delete,
-                    iconGradient = Brush.linearGradient(
-                        listOf(Color(0xFFFF8E8E), Color(0xFFE63946))
-                    ),
-                    label = "Clear all data",
-                    labelColor = Expense, // ← red text
-                    trailing = { TrailingChevron() },
-                    onClick = { onEvent(SettingsUiEvent.OnClearDataClicked) }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
+        if (isWideLayout) {
+            SettingsTabletLayout(
+                state = state,
+                onEvent = onEvent,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            )
+        } else {
+            SettingsSingleColumnLayout(
+                state = state,
+                onEvent = onEvent,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            )
         }
     }
 }
@@ -281,7 +193,8 @@ private fun SettingsScreenPreview() {
     PennywiseTheme {
         SettingsContent(
             state = SettingsUiState(),
-            onEvent = {}
+            onEvent = {},
+            windowLayout = PennywiseWindowLayout.PhonePortrait,
         )
     }
 }

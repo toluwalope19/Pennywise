@@ -49,6 +49,7 @@ import com.example.budgets.components.BudgetsEmptyState
 import com.example.budgets.components.BudgetsTopBar
 import com.example.budgets.components.NewBudgetSheet
 import com.example.domain.model.Budget
+import com.example.ui.PennywiseWindowLayout
 import com.example.ui.components.CategoryPickerSheet
 import com.example.ui.components.PennywiseDatePicker
 import com.example.ui.theme.Accent
@@ -60,6 +61,7 @@ import com.example.ui.theme.TextSecondary
 
 @Composable
 fun BudgetsScreen(
+    windowLayout: PennywiseWindowLayout = PennywiseWindowLayout.PhonePortrait,
     viewModel: BudgetsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -74,11 +76,14 @@ fun BudgetsScreen(
         }
     }
 
+
     BudgetsContent(
         state = state,
         newBudgetState = newBudgetState,
+        windowLayout = windowLayout,
         onEvent = viewModel::onEvent
     )
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,6 +91,7 @@ fun BudgetsScreen(
 private fun BudgetsContent(
     state: BudgetsUiState,
     newBudgetState: NewBudgetState,
+    windowLayout: PennywiseWindowLayout,
     onEvent: (BudgetsUiEvent) -> Unit
 ) {
     Scaffold(
@@ -163,14 +169,39 @@ private fun BudgetsContent(
                 }
             }
 
-            items(state.budgets) { budgetWithSpending ->
-                BudgetCard(
-                    budgetWithSpending = budgetWithSpending,
-                    onEvent = onEvent
-                )
+            val isWideLayout = windowLayout is PennywiseWindowLayout.TabletLandscape ||
+                    windowLayout is PennywiseWindowLayout.Foldable
+
+
+            if (isWideLayout) {
+                // ← 2-column grid using chunked
+                items(state.budgets.chunked(2)) { rowBudgets ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        rowBudgets.forEach { budgetWithSpending ->
+                            BudgetCard(
+                                budgetWithSpending = budgetWithSpending,
+                                onEvent = onEvent,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        // If odd number of budgets — fill remaining space
+                        if (rowBudgets.size == 1) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            } else {
+                items(state.budgets) { budgetWithSpending ->
+                    BudgetCard(
+                        budgetWithSpending = budgetWithSpending,
+                        onEvent = onEvent
+                    )
+                }
             }
-            // Budget list — next
-            // items(state.budgets) { BudgetCard(it, onEvent) }
+
         }
     }
 

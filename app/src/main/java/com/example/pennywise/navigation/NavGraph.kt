@@ -230,17 +230,20 @@ fun PennywiseNavGraph(
                 }
 
 
+
                 composable(Screen.Budgets.route) {
-                    BudgetsScreen()
+                    BudgetsScreen(windowLayout = windowLayout) // ← add
                 }
 
                 composable(Screen.Analytics.route) {
                     AnalyticsScreen(windowLayout = windowLayout)
                 }
 
+
                 composable(Screen.Settings.route) {
                     SettingsScreen(
-                        onNavigateBack = { navController.popBackStack() }
+                        onNavigateBack = { navController.popBackStack() },
+                        windowLayout = windowLayout // ← add
                     )
                 }
             }

@@ -86,6 +86,7 @@ private fun AnalyticsContent(
         contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
+                windowInsets = WindowInsets(top = 0),
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Background
                 ),
