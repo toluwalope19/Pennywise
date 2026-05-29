@@ -30,10 +30,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.analytics.components.AnalyticsSingleColumnLayout
+import com.example.analytics.components.AnalyticsTabletLayout
 import com.example.analytics.components.IncomeExpenseBarChart
 import com.example.analytics.components.LegendDot
 import com.example.analytics.components.SpendingBreakdownCard
 import com.example.analytics.components.TotalStatCard
+import com.example.ui.PennywiseWindowLayout
 import com.example.ui.theme.Accent
 import com.example.ui.theme.Background
 import com.example.ui.theme.Expense
@@ -48,6 +51,7 @@ import java.util.Locale
 
 @Composable
 fun AnalyticsScreen(
+    windowLayout: PennywiseWindowLayout = PennywiseWindowLayout.PhonePortrait,
     viewModel: AnalyticsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -63,6 +67,7 @@ fun AnalyticsScreen(
 
     AnalyticsContent(
         state = state,
+        windowLayout = windowLayout,
         onEvent = viewModel::onEvent
     )
 }
@@ -73,10 +78,12 @@ fun AnalyticsScreen(
 @Composable
 private fun AnalyticsContent(
     state: AnalyticsUiState,
+    windowLayout: PennywiseWindowLayout,
     onEvent: (AnalyticsUiEvent) -> Unit
 ) {
     Scaffold(
         containerColor = Background,
+        contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -118,50 +125,23 @@ private fun AnalyticsContent(
             return@Scaffold
         }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(
-                horizontal = 16.dp,
-                vertical = 12.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Bar chart card
-            item {
-                IncomeExpenseBarChart(state = state)
-            }
+        val isWideLayout = windowLayout is PennywiseWindowLayout.TabletLandscape ||
+                windowLayout is PennywiseWindowLayout.Foldable
 
-            // Spending breakdown
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Spending breakdown",
-                        fontFamily = InterFontFamily,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 17.sp,
-                        color = TextPrimary
-                    )
-                    Text(
-                        text = "${YearMonth.now().month.getDisplayName(
-                            TextStyle.FULL, Locale.getDefault()
-                        )} ${YearMonth.now().year}",
-                        fontFamily = InterFontFamily,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 12.sp,
-                        color = TextSecondary
-                    )
-                }
-            }
-
-            item {
-                SpendingBreakdownCard(breakdown = state.spendingBreakdown)
-            }
+        if (isWideLayout) {
+            AnalyticsTabletLayout(
+                state = state,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            )
+        } else {
+            AnalyticsSingleColumnLayout(
+                state = state,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            )
         }
     }
 }
@@ -233,7 +213,8 @@ private fun AnalyticsScreenPreview() {
                     CategoryBreakdown("Education", 0xFFB79CFFL, 60.47, 9f)
                 )
             ),
-            onEvent = {}
+            onEvent = {},
+            windowLayout = PennywiseWindowLayout.PhonePortrait
         )
     }
 }

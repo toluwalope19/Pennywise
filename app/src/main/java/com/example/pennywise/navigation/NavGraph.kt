@@ -235,7 +235,7 @@ fun PennywiseNavGraph(
                 }
 
                 composable(Screen.Analytics.route) {
-                    AnalyticsScreen()
+                    AnalyticsScreen(windowLayout = windowLayout)
                 }
 
                 composable(Screen.Settings.route) {

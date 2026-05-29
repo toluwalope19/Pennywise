@@ -73,7 +73,7 @@ fun SpendingBreakdownCard(
 }
 
 @Composable
-private fun BreakdownRow(item: CategoryBreakdown) {
+fun BreakdownRow(item: CategoryBreakdown) {
     val itemColor = Color(item.color.toULong())
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
