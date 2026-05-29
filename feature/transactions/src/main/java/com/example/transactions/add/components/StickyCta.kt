@@ -41,6 +41,7 @@ import androidx.core.graphics.toColorInt
 import com.example.domain.model.TransactionType
 import com.example.ui.theme.Background
 import com.example.ui.theme.PennywiseTheme
+import com.example.ui.utils.pressScale
 
 @Composable
 fun StickyCta(
@@ -84,6 +85,7 @@ fun StickyCta(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
+                .pressScale()
                 .clip(RoundedCornerShape(16.dp))
                 .background(
                     brush = Brush.linearGradient(colors = gradientColors)

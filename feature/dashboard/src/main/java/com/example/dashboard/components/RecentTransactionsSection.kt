@@ -48,6 +48,7 @@ import com.example.ui.theme.PennywiseTheme
 import com.example.ui.theme.Surface
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
+import com.example.ui.utils.StaggeredAnimatedItem
 import java.time.LocalDate
 
 
@@ -131,17 +132,19 @@ private fun RecentTransactionsCard(
     ) {
         Column {
             transactions.forEachIndexed { index, transaction ->
-                TransactionRow(
-                    transaction = transaction,
-                    categoryDisplay = categoryMap[transaction.categoryId]
-                        ?.toDisplay()
-                        ?: CategoryDisplay(
-                            name = "Other",
-                            icon = Icons.Rounded.MoreHoriz,
-                            color = Color(0xFF8C8C8C)
-                        ),
+                StaggeredAnimatedItem(index = index) {
+                    TransactionRow(
+                        transaction = transaction,
+                        categoryDisplay = categoryMap[transaction.categoryId]
+                            ?.toDisplay()
+                            ?: CategoryDisplay(
+                                name = "Other",
+                                icon = Icons.Rounded.MoreHoriz,
+                                color = Color(0xFF8C8C8C)
+                            ),
                     onClick = { onTransactionClick(transaction.id) }
-                )
+                    )
+                }
                 // Divider between rows — not after last
                 if (index < transactions.lastIndex) {
                     Box(

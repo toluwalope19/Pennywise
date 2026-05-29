@@ -58,6 +58,7 @@ import com.example.ui.theme.InterFontFamily
 import com.example.ui.theme.PennywiseTheme
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
+import com.example.ui.utils.StaggeredAnimatedItem
 
 @Composable
 fun BudgetsScreen(
@@ -176,29 +177,34 @@ private fun BudgetsContent(
             if (isWideLayout) {
                 // ← 2-column grid using chunked
                 items(state.budgets.chunked(2)) { rowBudgets ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        rowBudgets.forEach { budgetWithSpending ->
-                            BudgetCard(
-                                budgetWithSpending = budgetWithSpending,
-                                onEvent = onEvent,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                        // If odd number of budgets — fill remaining space
-                        if (rowBudgets.size == 1) {
-                            Spacer(modifier = Modifier.weight(1f))
+                    val rowIndex = state.budgets.chunked(2).indexOf(rowBudgets)
+                    StaggeredAnimatedItem(index = rowIndex) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            rowBudgets.forEach { budget ->
+                                BudgetCard(
+                                    budgetWithSpending = budget,
+                                    onEvent = onEvent,
+                                    modifier = Modifier.weight(1f)
+                                )
+                            }
+                            if (rowBudgets.size == 1) {
+                                Spacer(modifier = Modifier.weight(1f))
+                            }
                         }
                     }
                 }
             } else {
                 items(state.budgets) { budgetWithSpending ->
-                    BudgetCard(
-                        budgetWithSpending = budgetWithSpending,
-                        onEvent = onEvent
-                    )
+                    val index = state.budgets.indexOf(budgetWithSpending)
+                    StaggeredAnimatedItem(index = index) {
+                        BudgetCard(
+                            budgetWithSpending = budgetWithSpending,
+                            onEvent = onEvent
+                        )
+                    }
                 }
             }
 

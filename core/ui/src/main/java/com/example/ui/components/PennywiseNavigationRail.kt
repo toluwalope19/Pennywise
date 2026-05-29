@@ -45,6 +45,7 @@ import com.example.ui.theme.PennywiseTheme
 import com.example.ui.theme.Surface
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
+import com.example.ui.utils.pressScale
 
 @Composable
 fun PennywiseNavigationRail(
@@ -125,28 +126,7 @@ fun PennywiseNavigationRail(
             Spacer(modifier = Modifier.height(16.dp))
 
             // ── FAB ───────────────────────────────────────────────────────
-            Box(
-                modifier = Modifier
-                    .size(52.dp)
-                    .clip(CircleShape)
-                    .background(
-                        brush = Brush.linearGradient(
-                            colors = listOf(
-                                Color(0xFF8E78FF),
-                                Color(0xFF6644FF)
-                            )
-                        )
-                    )
-                    .clickable { onAddClick() },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Add,
-                    contentDescription = "Add transaction",
-                    tint = Color.White,
-                    modifier = Modifier.size(26.dp)
-                )
-            }
+            RailFab(onClick = onAddClick)
 
             Spacer(modifier = Modifier.height(16.dp))
 

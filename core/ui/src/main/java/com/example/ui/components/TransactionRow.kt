@@ -28,6 +28,7 @@ import com.example.ui.theme.Income
 import com.example.ui.theme.InterFontFamily
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
+import com.example.ui.utils.pressScale
 import java.time.LocalDate
 
 @Composable
@@ -61,6 +62,7 @@ fun TransactionRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .pressScale(scaleDown = 0.98f)
             .clickable { onClick() }
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,

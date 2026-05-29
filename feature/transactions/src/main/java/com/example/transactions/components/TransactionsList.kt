@@ -18,6 +18,7 @@ import androidx.paging.compose.itemKey
 import com.example.domain.model.Category
 import com.example.transactions.list.TransactionListItem
 import com.example.ui.theme.Accent
+import com.example.ui.utils.StaggeredAnimatedItem
 
 @Composable
 fun TransactionsList(
@@ -46,11 +47,13 @@ fun TransactionsList(
                     DateHeader(date = item.date)
                 }
                 is TransactionListItem.Item -> {
-                    TransactionCard(
-                        item = item,
-                        categoryMap = categoryMap,
-                        onTransactionClick = onTransactionClick
-                    )
+                    StaggeredAnimatedItem(index = index) { // ← wrap with this
+                        TransactionCard(
+                            item = item,
+                            categoryMap = categoryMap,
+                            onTransactionClick = onTransactionClick
+                        )
+                    }
                 }
                 null -> Unit
             }

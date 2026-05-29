@@ -33,6 +33,7 @@ import com.example.ui.theme.InterFontFamily
 import com.example.ui.theme.Surface
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
+import com.example.ui.utils.pressScale
 
 
 @Composable
@@ -51,6 +52,7 @@ fun BudgetCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .pressScale(scaleDown = 0.98f)
             .clip(RoundedCornerShape(16.dp))
             .background(Surface)
             .border(

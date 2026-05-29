@@ -37,6 +37,7 @@ import com.example.ui.theme.InterFontFamily
 import com.example.ui.theme.SurfaceElevated
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
+import com.example.ui.utils.pressScale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,6 +76,7 @@ fun BudgetsTopBar(
             Box(
                 modifier = Modifier
                     .padding(end = 16.dp)
+                    .pressScale()
                     .clip(RoundedCornerShape(50.dp))
                     .background(
                         brush = Brush.linearGradient(

@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.domain.model.Category
 import androidx.core.graphics.toColorInt
 
-// core/ui/src/main/java/com/pennywise/ui/components/CategoryDisplay.kt
+
 data class CategoryDisplay(
     val name: String,
     val icon: ImageVector,
