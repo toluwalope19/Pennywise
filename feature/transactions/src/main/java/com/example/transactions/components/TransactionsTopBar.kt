@@ -27,6 +27,7 @@ fun TransactionsTopBar(
     onMonthChanged: (Int) -> Unit
 ) {
     CenterAlignedTopAppBar(
+        windowInsets = WindowInsets(0),
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = Background
         ),

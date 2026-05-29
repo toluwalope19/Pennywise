@@ -1,6 +1,9 @@
 package com.example.dashboard.components
 
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -119,6 +123,15 @@ private fun DonutCenterContent(
 ) {
     val isEmpty = totalExpense <= 0.0
 
+    val animatedExpense by animateFloatAsState(
+        targetValue = totalExpense.toFloat(),
+        animationSpec = tween(
+            durationMillis = 1000,
+            easing = FastOutSlowInEasing
+        ),
+        label = "expense_counter"
+    )
+
     if (isEmpty) {
         // Empty state center
         Column(
@@ -148,7 +161,7 @@ private fun DonutCenterContent(
         }
     } else {
         // Normal state — existing content
-        val formatted = CurrencyFormatter.format(totalExpense)
+        val formatted = CurrencyFormatter.format(animatedExpense.toDouble())
         val parts = formatted.split(".")
         val whole = parts[0]
         val cents = parts.getOrElse(1) { "00" }

@@ -1,6 +1,13 @@
 package com.example.pennywise.navigation
 
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -132,7 +139,19 @@ fun PennywiseNavGraph(
                 startDestination = startDestination,
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxHeight()
+                    .fillMaxHeight(),
+                enterTransition = {
+                    fadeIn(animationSpec = tween(300))
+                },
+                exitTransition = {
+                    fadeOut(animationSpec = tween(300))
+                },
+                popEnterTransition = {
+                    fadeIn(animationSpec = tween(300))
+                },
+                popExitTransition = {
+                    fadeOut(animationSpec = tween(300))
+                }
             ) {
 
                 composable(Screen.Onboarding.route) {
@@ -189,9 +208,30 @@ fun PennywiseNavGraph(
                             type = NavType.StringType
                             defaultValue = "EXPENSE"
                         }
-                    )
+                    ),
+                    enterTransition = {
+                        slideInVertically(
+                            initialOffsetY = { it }, // starts from bottom
+                            animationSpec = tween(600)
+                        ) + fadeIn(animationSpec = tween(600))
+                    },
+                    exitTransition = {
+                        slideOutVertically(
+                            targetOffsetY = { it }, // exits to bottom
+                            animationSpec = tween(600)
+                        ) + fadeOut(animationSpec = tween(600))
+                    },
+                    popEnterTransition = {
+                        fadeIn(animationSpec = tween(600))
+                    },
+                    popExitTransition = {
+                        slideOutVertically(
+                            targetOffsetY = { it },
+                            animationSpec = tween(600)
+                        ) + fadeOut(animationSpec = tween(600))
+                    }
                 ) { backStackEntry ->
-                    val type = backStackEntry.arguments?.getString("type") ?: "EXPENSE"
+                    val id = backStackEntry.arguments?.getString("type") ?: "EXPENSE"
                     AddTransactionScreen(
                         onNavigateBack = { navController.popBackStack() },
                         onTransactionSaved = { navController.popBackStack() },
@@ -199,24 +239,35 @@ fun PennywiseNavGraph(
                     )
                 }
 
-                composable(
-                    route = Screen.EditTransaction.route,
-                    arguments = listOf(
-                        navArgument("id") { type = NavType.LongType }
-                    )
-                ) {
-                    EditTransactionScreen(
-                        onNavigateBack = { navController.popBackStack() }
-                    )
-                }
 
                 composable(
                     route = Screen.EditTransaction.route,
                     arguments = listOf(
                         navArgument("id") { type = NavType.LongType }
-                    )
-                ) { backStackEntry ->
-                    val id = backStackEntry.arguments?.getLong("id") ?: 0L
+                    ),
+                    enterTransition = {
+                        slideInHorizontally(
+                            initialOffsetX = { it }, // starts from right
+                            animationSpec = tween(350)
+                        ) + fadeIn(animationSpec = tween(350))
+                    },
+                    exitTransition = {
+                        slideOutHorizontally(
+                            targetOffsetX = { it }, // exits to right
+                            animationSpec = tween(350)
+                        ) + fadeOut(animationSpec = tween(350))
+                    },
+                    popEnterTransition = {
+                        fadeIn(animationSpec = tween(300))
+                    },
+                    popExitTransition = {
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(350)
+                        ) + fadeOut(animationSpec = tween(350))
+                    }
+                ) {
+                    val id = it.arguments?.getLong("id") ?: 0L
                     val viewModel = hiltViewModel<EditTransactionViewModel,
                             EditTransactionViewModel.Factory> { factory ->
                         factory.create(id)
@@ -230,7 +281,6 @@ fun PennywiseNavGraph(
                 }
 
 
-
                 composable(Screen.Budgets.route) {
                     BudgetsScreen(windowLayout = windowLayout) // ← add
                 }
@@ -240,10 +290,33 @@ fun PennywiseNavGraph(
                 }
 
 
-                composable(Screen.Settings.route) {
+                composable(
+                    route = Screen.Settings.route,
+                    enterTransition = {
+                        slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(350)
+                        ) + fadeIn(animationSpec = tween(350))
+                    },
+                    exitTransition = {
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(350)
+                        ) + fadeOut(animationSpec = tween(350))
+                    },
+                    popEnterTransition = {
+                        fadeIn(animationSpec = tween(300))
+                    },
+                    popExitTransition = {
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(350)
+                        ) + fadeOut(animationSpec = tween(350))
+                    }
+                ) {
                     SettingsScreen(
                         onNavigateBack = { navController.popBackStack() },
-                        windowLayout = windowLayout // ← add
+                        windowLayout = windowLayout
                     )
                 }
             }

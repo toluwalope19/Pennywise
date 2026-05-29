@@ -1,5 +1,8 @@
 package com.example.dashboard.components
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -83,6 +87,16 @@ private fun BalanceDisplay(
     totalIncome: Double,
     currencySymbol: String
 ) {
+
+    val animatedBalance by animateFloatAsState(
+        targetValue = totalBalance.toFloat(),
+        animationSpec = tween(
+            durationMillis = 1200,
+            easing = FastOutSlowInEasing
+        ),
+        label = "balance_counter"
+    )
+
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         // TOTAL BALANCE label
         Text(
@@ -95,7 +109,7 @@ private fun BalanceDisplay(
         )
 
         // Large balance number — whole + cents split
-        val balanceParts = String.format("%.2f", totalBalance).split(".")
+        val balanceParts = String.format("%.2f", animatedBalance).split(".")
         val whole = balanceParts[0]
         val cents = balanceParts.getOrElse(1) { "00" }
 

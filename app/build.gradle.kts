@@ -77,5 +77,7 @@ dependencies {
     implementation(project(":feature:budgets"))
     implementation(project(":feature:analytics"))
     implementation(project(":feature:settings"))
+    implementation(libs.compose.animation)
+    implementation(libs.navigation.compose)
 
 }
