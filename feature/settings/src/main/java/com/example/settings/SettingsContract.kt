@@ -24,6 +24,6 @@ sealed class SettingsUiEvent {
 
 sealed class SettingsUiEffect {
     data object NavigateBack : SettingsUiEffect()
-    data object ExportCSV : SettingsUiEffect()
+    data class ExportCSV(val csv: String) : SettingsUiEffect()
     data class ShowError(val message: String) : SettingsUiEffect()
 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.FileDownload
@@ -24,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,6 +47,7 @@ import com.example.ui.theme.InterFontFamily
 import com.example.ui.theme.PennywiseTheme
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
+import com.example.ui.utils.shareCSV
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
@@ -55,11 +58,14 @@ fun AnalyticsScreen(
     viewModel: AnalyticsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                AnalyticsUiEffect.ExportCSV -> { /* defer */ }
+                is AnalyticsUiEffect.ExportCSV -> {
+                    shareCSV(context, effect.csv)
+                }
                 is AnalyticsUiEffect.ShowError -> { /* Snackbar later */ }
             }
         }
@@ -101,14 +107,24 @@ private fun AnalyticsContent(
                     )
                 },
                 actions = {
-                    IconButton(
-                        onClick = { onEvent(AnalyticsUiEvent.OnExportClicked) }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.FileDownload,
-                            contentDescription = "Export",
-                            tint = TextPrimary
+                    if (state.isExporting) {
+                        CircularProgressIndicator(
+                            color = TextPrimary,
+                            modifier = Modifier
+                                .size(20.dp)
+                                .padding(end = 16.dp),
+                            strokeWidth = 2.dp
                         )
+                    } else {
+                        IconButton(
+                            onClick = { onEvent(AnalyticsUiEvent.OnExportClicked) }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.FileDownload,
+                                contentDescription = "Export",
+                                tint = TextPrimary
+                            )
+                        }
                     }
                 }
             )

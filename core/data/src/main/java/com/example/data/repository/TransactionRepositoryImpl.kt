@@ -91,4 +91,7 @@ class TransactionRepositoryImpl @Inject constructor(
         dao.getTransactionsInRange(startDate, endDate)
             .map { entities -> entities.map { it.toDomain() } }
 
+    override suspend fun getAllTransactions(): List<Transaction> =
+        dao.getAllTheTransactions().map { it.toDomain() }
+
 }

@@ -18,6 +18,7 @@ data class CategoryBreakdown(
 
 data class AnalyticsUiState(
     val isLoading: Boolean = true,
+    val isExporting: Boolean = false,
     val monthlyData: List<MonthlyData> = emptyList(),
     val totalIncome6Months: Double = 0.0,
     val totalExpense6Months: Double = 0.0,
@@ -33,6 +34,6 @@ sealed class AnalyticsUiEvent {
 }
 
 sealed class AnalyticsUiEffect {
-    data object ExportCSV : AnalyticsUiEffect()
+    data class ExportCSV(val csv: String) : AnalyticsUiEffect()
     data class ShowError(val message: String) : AnalyticsUiEffect()
 }

@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,6 +55,7 @@ import com.example.ui.theme.Expense
 import com.example.ui.theme.InterFontFamily
 import com.example.ui.theme.PennywiseTheme
 import com.example.ui.theme.TextPrimary
+import com.example.ui.utils.shareCSV
 
 @Composable
 fun SettingsScreen(
@@ -62,12 +64,15 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 SettingsUiEffect.NavigateBack -> onNavigateBack()
-                SettingsUiEffect.ExportCSV -> { /* defer */ }
+                is SettingsUiEffect.ExportCSV -> {
+                    shareCSV(context, effect.csv) // ← handle here
+                }
                 is SettingsUiEffect.ShowError -> { /* Snackbar later */ }
             }
         }

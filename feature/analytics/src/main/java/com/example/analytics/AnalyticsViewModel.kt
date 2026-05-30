@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.common.mvi.MviViewModel
 import com.example.domain.model.TransactionType
 import com.example.domain.usecase.category.GetCategoriesUseCase
+import com.example.domain.usecase.transaction.ExportCsvUseCase
 import com.example.domain.usecase.transaction.GetTransactionsInRangeUseCase
 import com.example.ui.components.CategoryType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AnalyticsViewModel @Inject constructor(
     private val getTransactionsInRange: GetTransactionsInRangeUseCase,
-    private val getCategories: GetCategoriesUseCase
+    private val getCategories: GetCategoriesUseCase,
+    private val exportCsv: ExportCsvUseCase
 ) : MviViewModel<AnalyticsUiState, AnalyticsUiEvent, AnalyticsUiEffect>(
     initialState = AnalyticsUiState()
 ) {
@@ -31,7 +33,21 @@ class AnalyticsViewModel @Inject constructor(
         when (event) {
             AnalyticsUiEvent.LoadAnalytics -> loadAnalytics()
             AnalyticsUiEvent.OnExportClicked -> {
-                setEffect(AnalyticsUiEffect.ExportCSV)
+                exportTransactions()
+            }
+        }
+    }
+
+    private fun exportTransactions() {
+        viewModelScope.launch {
+            setState { copy(isExporting = true) }
+            try {
+                val csv = exportCsv()
+                setState { copy(isExporting = false) }
+                setEffect(AnalyticsUiEffect.ExportCSV(csv))
+            } catch (e: Exception) {
+                setState { copy(isExporting = false) }
+                setEffect(AnalyticsUiEffect.ShowError("Export failed: ${e.message}"))
             }
         }
     }

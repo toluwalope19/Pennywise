@@ -18,6 +18,11 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.runtime.Composable
+import android.content.Context
+import android.content.Intent
+import androidx.core.content.FileProvider
+import java.io.File
+import java.time.LocalDate
 
 
 fun Modifier.pressScale(
@@ -92,4 +97,32 @@ fun StaggeredAnimatedItem(
     ) {
         content()
     }
+}
+
+
+
+fun shareCSV(context: Context, csv: String) {
+    // Write CSV to cache file
+    val fileName = "pennywise_export_${LocalDate.now()}.csv"
+    val file = File(context.cacheDir, fileName)
+    file.writeText(csv)
+
+    // Get URI via FileProvider
+    val uri = FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.fileprovider",
+        file
+    )
+
+    // Share intent
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "text/csv"
+        putExtra(Intent.EXTRA_STREAM, uri)
+        putExtra(Intent.EXTRA_SUBJECT, "Pennywise Transactions Export")
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+
+    context.startActivity(
+        Intent.createChooser(intent, "Export transactions as CSV")
+    )
 }

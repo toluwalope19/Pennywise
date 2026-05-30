@@ -4,6 +4,7 @@ package com.example.settings
 import androidx.lifecycle.viewModelScope
 import com.example.common.mvi.MviViewModel
 import com.example.domain.repository.PreferencesRepository
+import com.example.domain.usecase.transaction.ExportCsvUseCase
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val preferencesRepository: PreferencesRepository
+    private val preferencesRepository: PreferencesRepository,
+    private val exportCsv: ExportCsvUseCase
 ) : MviViewModel<SettingsUiState, SettingsUiEvent, SettingsUiEffect>(
     initialState = SettingsUiState()
 ) {
@@ -55,7 +57,7 @@ class SettingsViewModel @Inject constructor(
             }
 
             SettingsUiEvent.OnExportCSVClicked ->
-                setEffect(SettingsUiEffect.ExportCSV)
+                exportTransactions()
 
             SettingsUiEvent.OnClearDataClicked -> {
                 // Show confirmation dialog — handled in UI
@@ -66,4 +68,16 @@ class SettingsViewModel @Inject constructor(
             }
         }
     }
+
+    private fun exportTransactions() {
+        viewModelScope.launch {
+            try {
+                val csv = exportCsv()
+                setEffect(SettingsUiEffect.ExportCSV(csv))
+            } catch (e: Exception) {
+                setEffect(SettingsUiEffect.ShowError("Export failed: ${e.message}"))
+            }
+        }
+    }
+
 }

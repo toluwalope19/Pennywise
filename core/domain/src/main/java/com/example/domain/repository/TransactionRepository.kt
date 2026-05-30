@@ -23,5 +23,6 @@ interface TransactionRepository {
         endDate: LocalDate
     ): Flow<List<Transaction>>
 
+    suspend fun getAllTransactions(): List<Transaction>
 
 }
