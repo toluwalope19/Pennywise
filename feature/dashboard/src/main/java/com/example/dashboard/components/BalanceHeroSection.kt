@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,8 +25,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +39,7 @@ import com.example.ui.theme.Expense
 import com.example.ui.theme.Income
 import com.example.ui.theme.InterFontFamily
 import com.example.ui.theme.PennywiseTheme
+import com.example.ui.theme.Surface as SurfaceColor
 import com.example.ui.theme.TextPrimary
 import com.example.ui.theme.TextSecondary
 
@@ -44,39 +48,101 @@ fun BalanceHeroSection(
     totalBalance: Double,
     totalIncome: Double,
     totalExpense: Double,
-    currencySymbol: String = "₦"
+    currencySymbol: String = "₦",
+    stackCards: Boolean = false,
+    cardBackground: Boolean = false
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Balance label + number + badge
-        BalanceDisplay(
-            totalBalance = totalBalance,
-            totalIncome = totalIncome,
-            currencySymbol = currencySymbol
-        )
+        // Balance display — optionally wrapped in a card with purple radial gradient
+        if (cardBackground) {
+            BoxWithConstraints(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(24.dp))
+                    .border(
+                        width = 1.dp,
+                        color = Color.White.copy(alpha = 0.06f),
+                        shape = RoundedCornerShape(24.dp)
+                    )
+            ) {
+                val widthPx = with(LocalDensity.current) { maxWidth.toPx() }
+                val heightPx = with(LocalDensity.current) { maxHeight.toPx() }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(SurfaceColor)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(
+                                    Color(0xFF7B61FF).copy(alpha = 0.22f),
+                                    Color.Transparent
+                                ),
+                                center = Offset(x = widthPx * 0.80f, y = heightPx * 0.20f),
+                                radius = widthPx * 0.70f
+                            )
+                        )
+                        .padding(20.dp)
+                ) {
+                    BalanceDisplay(
+                        totalBalance = totalBalance,
+                        totalIncome = totalIncome,
+                        currencySymbol = currencySymbol
+                    )
+                }
+            }
+        } else {
+            BalanceDisplay(
+                totalBalance = totalBalance,
+                totalIncome = totalIncome,
+                currencySymbol = currencySymbol
+            )
+        }
 
-        // Income + Expense cards
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            IncomeExpenseCard(
-                label = "INCOME",
-                amount = totalIncome,
-                currencySymbol = currencySymbol,
-                isIncome = true,
-                modifier = Modifier.weight(1f)
-            )
-            IncomeExpenseCard(
-                label = "EXPENSES",
-                amount = totalExpense,
-                currencySymbol = currencySymbol,
-                isIncome = false,
-                modifier = Modifier.weight(1f)
-            )
+        // Income + Expense cards — stacked vertically on foldable, side-by-side elsewhere
+        if (stackCards) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                IncomeExpenseCard(
+                    label = "INCOME",
+                    amount = totalIncome,
+                    currencySymbol = currencySymbol,
+                    isIncome = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                IncomeExpenseCard(
+                    label = "EXPENSES",
+                    amount = totalExpense,
+                    currencySymbol = currencySymbol,
+                    isIncome = false,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                IncomeExpenseCard(
+                    label = "INCOME",
+                    amount = totalIncome,
+                    currencySymbol = currencySymbol,
+                    isIncome = true,
+                    modifier = Modifier.weight(1f)
+                )
+                IncomeExpenseCard(
+                    label = "EXPENSES",
+                    amount = totalExpense,
+                    currencySymbol = currencySymbol,
+                    isIncome = false,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 }

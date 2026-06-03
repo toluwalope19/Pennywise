@@ -51,7 +51,9 @@ import com.example.ui.theme.TextSecondary
 fun DonutCard(
     totalExpense: Double,
     categorySpending: List<CategorySpending>,
-    currencySymbol: String = "₦"
+    currencySymbol: String = "₦",
+    dotLegend: Boolean = false,
+    sideLegend: Boolean = false
 ) {
     BoxWithConstraints(
         modifier = Modifier
@@ -65,6 +67,14 @@ fun DonutCard(
     ) {
         val widthPx = with(LocalDensity.current) { maxWidth.toPx() }
         val heightPx = with(LocalDensity.current) { maxHeight.toPx() }
+
+        val segments = categorySpending.map { spending ->
+            DonutSegment(
+                value = spending.percentage,
+                color = CategoryType.fromName(spending.categoryName).gradientStart,
+                label = spending.categoryName
+            )
+        }
 
         Column(
             modifier = Modifier
@@ -87,30 +97,50 @@ fun DonutCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // Build segments from category spending
-            val segments = categorySpending.map { spending ->
-                DonutSegment(
-                    value = spending.percentage,
-                    color = CategoryType.fromName(spending.categoryName).gradientStart,
-                    label = spending.categoryName
-                )
-            }
-
-            // Donut chart with center content slot
-            DonutChart(
-                segments = segments,
-                chartSize = 240.dp,
-                strokeWidth = 24.dp,
-                centerContent = {
-                    DonutCenterContent(
-                        totalExpense = totalExpense,
-                        currencySymbol = currencySymbol
+            if (sideLegend && categorySpending.isNotEmpty()) {
+                // Donut left, single-column legend right
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    DonutChart(
+                        segments = segments,
+                        chartSize = 200.dp,
+                        strokeWidth = 22.dp,
+                        centerContent = {
+                            DonutCenterContent(
+                                totalExpense = totalExpense,
+                                currencySymbol = currencySymbol
+                            )
+                        }
+                    )
+                    CategoryLegendGrid(
+                        categorySpending = categorySpending,
+                        singleColumn = true,
+                        modifier = Modifier.weight(1f)
                     )
                 }
-            )
-
-            if (categorySpending.isNotEmpty()) {
-                CategoryLegendGrid(categorySpending = categorySpending)
+            } else {
+                // Default: chart on top, legend below
+                DonutChart(
+                    segments = segments,
+                    chartSize = 240.dp,
+                    strokeWidth = 24.dp,
+                    centerContent = {
+                        DonutCenterContent(
+                            totalExpense = totalExpense,
+                            currencySymbol = currencySymbol
+                        )
+                    }
+                )
+                if (categorySpending.isNotEmpty()) {
+                    if (dotLegend) {
+                        CategoryDotLegend(categorySpending = categorySpending)
+                    } else {
+                        CategoryLegendGrid(categorySpending = categorySpending)
+                    }
+                }
             }
         }
     }

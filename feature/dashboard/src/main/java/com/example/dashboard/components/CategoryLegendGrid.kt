@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
@@ -37,26 +39,37 @@ import com.example.ui.theme.TextSecondary
 
 @Composable
 fun CategoryLegendGrid(
-    categorySpending: List<CategorySpending>
+    categorySpending: List<CategorySpending>,
+    singleColumn: Boolean = false,
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        categorySpending.chunked(2).forEach { rowItems ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                rowItems.forEach { spending ->
-                    LegendCard(
-                        spending = spending,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-                // If odd number — fill empty slot so card doesn't stretch
-                if (rowItems.size == 1) {
-                    Spacer(modifier = Modifier.weight(1f))
+        if (singleColumn) {
+            categorySpending.forEach { spending ->
+                LegendCard(
+                    spending = spending,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        } else {
+            categorySpending.chunked(2).forEach { rowItems ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    rowItems.forEach { spending ->
+                        LegendCard(
+                            spending = spending,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    // If odd number — fill empty slot so card doesn't stretch
+                    if (rowItems.size == 1) {
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
                 }
             }
         }
@@ -145,6 +158,77 @@ private fun LegendCard(
                 color = categoryColor
             )
         }
+    }
+}
+
+// ── Dot legend (compact, inline) ───────────────────────────────────────────
+
+@Composable
+fun CategoryDotLegend(
+    categorySpending: List<CategorySpending>,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        categorySpending.chunked(3).forEach { rowItems ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                rowItems.forEach { spending ->
+                    DotLegendItem(
+                        spending = spending,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                repeat(3 - rowItems.size) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DotLegendItem(
+    spending: CategorySpending,
+    modifier: Modifier = Modifier
+) {
+    val color = CategoryType.fromName(spending.categoryName).gradientStart
+    val displayName = spending.categoryName
+        .lowercase()
+        .replaceFirstChar { it.uppercase() }
+
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(5.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(7.dp)
+                .clip(CircleShape)
+                .background(color)
+        )
+        Text(
+            text = displayName,
+            fontFamily = InterFontFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 11.sp,
+            color = TextSecondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f, fill = false)
+        )
+        Text(
+            text = "${spending.percentage.toInt()}%",
+            fontFamily = InterFontFamily,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 11.sp,
+            color = color
+        )
     }
 }
 

@@ -4,26 +4,22 @@ package com.example.dashboard.adaptable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.window.layout.FoldingFeature
-import com.example.common.utils.CurrencyFormatter
 import com.example.dashboard.CategorySpending
 import com.example.dashboard.DashboardUiEvent
 import com.example.dashboard.DashboardUiState
@@ -31,11 +27,7 @@ import com.example.dashboard.components.BalanceHeroSection
 import com.example.dashboard.components.DonutCard
 import com.example.dashboard.components.RecentTransactionsSection
 import com.example.ui.theme.Background
-import com.example.ui.theme.Expense
-import com.example.ui.theme.Income
-import com.example.ui.theme.InterFontFamily
 import com.example.ui.theme.PennywiseTheme
-import com.example.ui.theme.TextPrimary
 
 @Composable
 fun DashboardFoldableLayout(
@@ -52,67 +44,46 @@ fun DashboardFoldableLayout(
     }
 
     Box(modifier = modifier) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            // Top row — balance left, donut right
-            Row(
+            // Left pane — balance hero (includes income/expense cards)
+            LazyColumn(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(28.dp)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 8.dp)
             ) {
-                Box(modifier = Modifier.weight(1f)) {
+                item {
                     BalanceHeroSection(
                         totalBalance = state.totalBalance,
                         totalIncome = state.totalIncome,
-                        totalExpense = state.totalExpense
-                    )
-                }
-                Box(modifier = Modifier.weight(1f)) {
-                    DonutCard(
                         totalExpense = state.totalExpense,
-                        categorySpending = state.spendingByCategory
+                        stackCards = true
                     )
                 }
             }
 
-            // Bottom row — income/expense left, recent right
-            Row(
+            // Right pane — spending overview with legend + recent transactions
+            LazyColumn(
                 modifier = Modifier
                     .weight(1f)
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(28.dp)
+                    .fillMaxHeight(),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                contentPadding = PaddingValues(bottom = 8.dp)
             ) {
-                // Left — compact income + expense
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        CompactStatCard(
-                            label = "INCOME · MAY",
-                            value = "+${CurrencyFormatter.formatWithSymbol(state.totalIncome)}",
-                            valueColor = Income,
-                            modifier = Modifier.weight(1f)
-                        )
-                        CompactStatCard(
-                            label = "EXPENSES · MAY",
-                            value = "-${CurrencyFormatter.formatWithSymbol(state.totalExpense)}",
-                            valueColor = Expense,
-                            modifier = Modifier.weight(1f)
-                        )
-                    }
+                item {
+                    DonutCard(
+                        totalExpense = state.totalExpense,
+                        categorySpending = state.spendingByCategory,
+                        dotLegend = true
+                    )
                 }
-
-                // Right — recent transactions
-                Box(modifier = Modifier.weight(1f)) {
+                item {
                     RecentTransactionsSection(
                         transactions = state.recentTransactions,
                         categoryMap = state.categoryMap,
@@ -251,90 +222,48 @@ private fun DashboardTabletLandscapePreview() {
 @Composable
 private fun DashboardFoldablePreview() {
     PennywiseTheme {
-        // We can't preview FoldingFeature — simulate the two-column layout
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Background)
-                .padding(16.dp)
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                // Top row
-                Row(
+                LazyColumn(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(28.dp)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(bottom = 8.dp)
                 ) {
-                    Box(modifier = Modifier.weight(1f)) {
+                    item {
                         BalanceHeroSection(
                             totalBalance = previewState.totalBalance,
                             totalIncome = previewState.totalIncome,
-                            totalExpense = previewState.totalExpense
-                        )
-                    }
-                    Box(modifier = Modifier.weight(1f)) {
-                        DonutCard(
                             totalExpense = previewState.totalExpense,
-                            categorySpending = previewState.spendingByCategory
+                            stackCards = true
                         )
                     }
                 }
-
-                // Bottom row
-                Row(
+                LazyColumn(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(28.dp)
+                        .fillMaxHeight(),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(bottom = 8.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            CompactStatCard(
-                                label = "INCOME · MAY",
-                                value = "+${CurrencyFormatter.formatWithSymbol(
-                                    previewState.totalIncome
-                                )}",
-                                valueColor = Income,
-                                modifier = Modifier.weight(1f)
-                            )
-                            CompactStatCard(
-                                label = "EXPENSES · MAY",
-                                value = "-${CurrencyFormatter.formatWithSymbol(
-                                    previewState.totalExpense
-                                )}",
-                                valueColor = Expense,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                    }
-                    Box(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "Recent transactions",
-                            fontFamily = InterFontFamily,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 15.sp,
-                            color = TextPrimary
+                    item {
+                        DonutCard(
+                            totalExpense = previewState.totalExpense,
+                            categorySpending = previewState.spendingByCategory,
+                            dotLegend = true
                         )
                     }
                 }
-
-                // Simulated hinge line
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(1.dp)
-                        .background(Color.White.copy(alpha = 0.06f))
-                )
             }
         }
     }
