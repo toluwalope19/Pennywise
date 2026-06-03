@@ -137,7 +137,42 @@ class AddTransactionViewModel @Inject constructor(
             }
 
             // ML Kit
-            is AddTransactionUiEvent.OnReceiptScanned -> processReceipt(event.imageBytes)
+            // Handle new events:
+            AddTransactionUiEvent.OnOpenReceiptPicker -> {
+                setEffect(AddTransactionUiEffect.OpenImagePicker)
+            }
+
+            AddTransactionUiEvent.OnScanningStarted -> {
+                setState { copy(isScanning = true, scanError = null) }
+            }
+
+            is AddTransactionUiEvent.OnReceiptScanned -> {
+                setState { copy(isScanning = false) }
+
+                // Auto-fill amount if parsed
+                event.amount?.let { amount ->
+                    setState {
+                        copy(
+                            amountInput = amount.toBigDecimal()
+                                .stripTrailingZeros()
+                                .toPlainString()
+                        )
+                    }
+                }
+
+                // Auto-fill note with merchant name if parsed
+                event.merchant?.let { merchant ->
+                    setState { copy(note = merchant) }
+                }
+
+                event.date?.let { date ->
+                    setState { copy(selectedDate = date) }
+                }
+            }
+
+            is AddTransactionUiEvent.OnScanError -> {
+                setState { copy(isScanning = false, scanError = event.message) }
+            }
 
             // Save
             AddTransactionUiEvent.OnSaveClicked -> saveTransaction()
@@ -184,23 +219,7 @@ class AddTransactionViewModel @Inject constructor(
         }
     }
 
-    // ── ML Kit receipt processing ──────────────────────────────────────────
 
-    private fun processReceipt(imageBytes: ByteArray) {
-        viewModelScope.launch {
-            setState { copy(isScanning = true, scanError = null) }
-            try {
-                // ML Kit processing happens in the UI layer
-                // ViewModel receives the parsed result via OnReceiptScanned
-                // Amount parsing from receipt text is done here
-                setState { copy(isScanning = false) }
-            } catch (e: Exception) {
-                setState {
-                    copy(isScanning = false, scanError = "Could not read receipt")
-                }
-            }
-        }
-    }
 
     // ── Save transaction ───────────────────────────────────────────────────
 

@@ -79,5 +79,10 @@ dependencies {
     implementation(project(":feature:settings"))
     implementation(libs.compose.animation)
     implementation(libs.navigation.compose)
+    // ML Kit Text Recognition
+    implementation(libs.mlkit.text.recognition)
+    implementation(libs.androidx.activity.ktx)
+
+
 
 }

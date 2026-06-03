@@ -7,19 +7,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,20 +23,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.common.utils.CurrencyFormatter
 import com.example.dashboard.DashboardUiEvent
 import com.example.dashboard.DashboardUiState
-import com.example.dashboard.components.BalanceHeroSection
-import com.example.dashboard.components.DashboardTopBar
 import com.example.dashboard.components.DonutCard
 import com.example.dashboard.components.RecentTransactionsSection
-import com.example.ui.PennywiseWindowLayout
-import com.example.ui.components.PennywiseBottomNav
-import com.example.ui.components.PennywiseRoutes
-import com.example.ui.theme.Accent
-import com.example.ui.theme.Background
 import com.example.ui.theme.Expense
 import com.example.ui.theme.Income
 import com.example.ui.theme.InterFontFamily
@@ -54,23 +41,19 @@ fun DashboardPhoneLandscapeLayout(
     onEvent: (DashboardUiEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        Row(
+    Row(
+        modifier = modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // Left panel: balance stats + recent transactions (scrollable)
+        LazyColumn(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp)
-                .padding(top = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(bottom = 4.dp)
         ) {
-            // Left column — balance + income/expense
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                // Compact balance — just numbers, no large padding
+            item {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -98,22 +81,18 @@ fun DashboardPhoneLandscapeLayout(
                         )
                     }
                 }
-
-                // Income + Expense — reuse exact same BalanceHeroSection
-                // but we only want the income/expense row portion
-                // Since BalanceHeroSection bundles both, we split here
+            }
+            item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Income card
                     CompactStatCard(
                         label = "INCOME",
                         value = "+${CurrencyFormatter.formatWithSymbol(state.totalIncome)}",
                         valueColor = Income,
                         modifier = Modifier.weight(1f)
                     )
-                    // Expense card
                     CompactStatCard(
                         label = "EXPENSES",
                         value = "-${CurrencyFormatter.formatWithSymbol(state.totalExpense)}",
@@ -122,35 +101,29 @@ fun DashboardPhoneLandscapeLayout(
                     )
                 }
             }
-
-            // Right column — donut card fills height
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-            ) {
-                DonutCard(
-                    totalExpense = state.totalExpense,
-                    categorySpending = state.spendingByCategory
+            item {
+                RecentTransactionsSection(
+                    transactions = state.recentTransactions,
+                    categoryMap = state.categoryMap,
+                    onSeeAllClick = { onEvent(DashboardUiEvent.OnSeeAllTransactionsClick) },
+                    onTransactionClick = { id -> onEvent(DashboardUiEvent.OnTransactionClick(id)) }
                 )
             }
         }
 
-        // Full width — recent transactions scrollable
-        RecentTransactionsSection(
-            transactions = state.recentTransactions,
-            categoryMap = state.categoryMap,
-            onSeeAllClick = {
-                onEvent(DashboardUiEvent.OnSeeAllTransactionsClick)
-            },
-            onTransactionClick = { id ->
-                onEvent(DashboardUiEvent.OnTransactionClick(id))
-            },
+        // Right panel: DonutCard scrollable so category legend is reachable
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp)
-                .padding(bottom = 8.dp, top = 8.dp)
-        )
+                .weight(1f)
+                .fillMaxHeight()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            DonutCard(
+                totalExpense = state.totalExpense,
+                categorySpending = state.spendingByCategory
+            )
+        }
     }
 }
 

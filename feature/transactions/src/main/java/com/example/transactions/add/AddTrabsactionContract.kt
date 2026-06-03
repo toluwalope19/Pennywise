@@ -33,6 +33,7 @@ data class AddTransactionUiState(
     val isScanning: Boolean = false,
     val scanError: String? = null,
 
+
     // Saving state
     val isSaving: Boolean = false,
     val saveError: String? = null,
@@ -81,7 +82,14 @@ sealed class AddTransactionUiEvent {
     data class OnNoteChanged(val note: String) : AddTransactionUiEvent()
 
     // ML Kit
-    data class OnReceiptScanned(val imageBytes: ByteArray) : AddTransactionUiEvent()
+    data object OnScanningStarted : AddTransactionUiEvent()
+    data class OnReceiptScanned(
+        val amount: Double?,
+        val merchant: String?,
+        val date: LocalDate?
+    ) : AddTransactionUiEvent()
+    data class OnScanError(val message: String) : AddTransactionUiEvent()
+    data object OnOpenReceiptPicker : AddTransactionUiEvent()
 
     // Save
     data object OnSaveClicked : AddTransactionUiEvent()
@@ -96,4 +104,5 @@ sealed class AddTransactionUiEffect {
     data object NavigateBack : AddTransactionUiEffect()
     data object TransactionSaved : AddTransactionUiEffect()
     data class ShowError(val message: String) : AddTransactionUiEffect()
+    data object OpenImagePicker : AddTransactionUiEffect()
 }

@@ -15,11 +15,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material.icons.rounded.DocumentScanner
 import androidx.compose.material.icons.rounded.EditCalendar
 import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material.icons.rounded.PhotoCamera
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +39,8 @@ import com.example.transactions.add.AddTransactionUiState
 import com.example.ui.components.CategoryIcon
 import com.example.ui.components.CategoryIconShape
 import com.example.ui.components.toDisplay
+import com.example.ui.theme.Accent
+import com.example.ui.theme.Expense
 import com.example.ui.theme.InterFontFamily
 import com.example.ui.theme.PennywiseTheme
 import com.example.ui.theme.Surface
@@ -179,16 +183,40 @@ fun FieldRows(
             onClick = { onEvent(AddTransactionUiEvent.OnDatePickerOpen) }
         )
 
-        // Receipt scan
+        // Receipt field row
         FieldRow(
-            leadingContent = {
-                MutedLeadingIcon(Icons.Rounded.DocumentScanner)
-            },
             label = "RECEIPT",
-            value = if (state.isScanning) "Scanning..." else "Scan to auto-fill",
-            valueColor = TextSecondary,
-            trailingIcon = Icons.Rounded.PhotoCamera,
-            onClick = { /* ML Kit — wired later */ }
+            value = when {
+                state.isScanning -> "Scanning receipt..."
+                state.scanError != null -> state.scanError!!
+                else -> "Scan to auto-fill"
+            },
+            valueColor = when {
+                state.isScanning -> Accent
+                state.scanError != null -> Expense
+                else -> TextSecondary
+            },
+            trailingIcon = if (state.isScanning) Icons.Default.PhotoCamera else Icons.Rounded.PhotoCamera,
+            leadingContent = if (state.isScanning) {
+                {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        color = Accent,
+                        strokeWidth = 2.dp
+                    )
+                }
+            } else {
+                {
+                    MutedLeadingIcon(
+                        Icons.Rounded.DocumentScanner
+                    )
+                }
+            },
+            onClick = {
+                if (!state.isScanning) {
+                    onEvent(AddTransactionUiEvent.OnOpenReceiptPicker)
+                }
+            }
         )
 
         // Note

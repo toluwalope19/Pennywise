@@ -66,6 +66,8 @@ fun computeWindowLayout(
         // Tablet portrait — medium width and tall
         isMediumWidth                      -> PennywiseWindowLayout.TabletPortrait
 
+
+
         // Default — phone portrait
         else                               -> PennywiseWindowLayout.PhonePortrait
     }

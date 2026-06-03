@@ -2,6 +2,9 @@ package com.example.transactions.add
 
 
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,8 +28,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +44,8 @@ import com.example.transactions.add.components.AddTransactionTabletLandscapeLayo
 import com.example.transactions.add.components.FieldRows
 import com.example.transactions.add.components.StickyCta
 import com.example.transactions.add.components.TypeToggle
+import com.example.transactions.mlkit.parseReceipt
+import com.example.transactions.mlkit.recognizeReceiptText
 import com.example.ui.PennywiseWindowLayout
 import com.example.ui.components.CategoryPickerSheet
 import com.example.ui.components.HeroAmountCard
@@ -48,6 +55,7 @@ import com.example.ui.theme.Background
 import com.example.ui.theme.Income
 import com.example.ui.theme.InterFontFamily
 import com.example.ui.theme.TextPrimary
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -58,6 +66,37 @@ fun AddTransactionScreen(
     viewModel: AddTransactionViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    // ← Image picker launcher
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            scope.launch {
+                viewModel.onEvent(AddTransactionUiEvent.OnScanningStarted)
+                try {
+                    // Run OCR
+                    val rawText = recognizeReceiptText(context, uri)
+                    // Parse result
+                    val result = parseReceipt(rawText)
+                    // Send to ViewModel
+                    viewModel.onEvent(
+                        AddTransactionUiEvent.OnReceiptScanned(
+                            amount = result.amount,
+                            merchant = result.merchant,
+                            date = result.date
+                        )
+                    )
+                } catch (e: Exception) {
+                    viewModel.onEvent(
+                        AddTransactionUiEvent.OnScanError("Could not read receipt")
+                    )
+                }
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -68,6 +107,10 @@ fun AddTransactionScreen(
                 }
                 is AddTransactionUiEffect.ShowError -> {
                     // Snackbar — wire later
+                }
+                AddTransactionUiEffect.OpenImagePicker -> {
+                    // ← Launch picker when effect fires
+                    imagePickerLauncher.launch("image/*")
                 }
             }
         }

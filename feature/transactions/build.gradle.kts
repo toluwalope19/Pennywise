@@ -57,6 +57,7 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     implementation(libs.compose.icons.extended)
     implementation(libs.mlkit.text.recognition)
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.window)
     implementation(libs.androidx.window.core)
 }
